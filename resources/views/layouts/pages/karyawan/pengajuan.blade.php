@@ -112,7 +112,7 @@
             // Add more rows if needed
         ];
 
-        const rowsPerPage = 10;
+        const rowsPerPage = 8;
         let currentPage = 1;
         let filteredData = data;
 
