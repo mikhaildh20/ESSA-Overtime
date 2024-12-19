@@ -1,55 +1,152 @@
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Self Service</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Employee Self Service Politeknik Astra</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: 'Barlow', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+        }
+        .header img {
+            height: 50px;
+        }
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .header .title-top {
+            display: block;
+        }
+        .header .title-bottom {
+            display: block;
+        }
+        .nav-link {
+            color: #333 !important;
+        }
+        .notification {
+            background-color: #ddd;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .status {
+            border: 1px solid #ddd;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .bar-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 25px;
+            margin: 10px 0;
+        }
+        .bar {
+            height: 20px;
+            border-radius: 25px;
+        }
+        .bar.medical {
+            width: 84%;
+            background-color: #f0ad4e;
+        }
+        .bar.annual {
+            width: 30%;
+            background-color: #f0ad4e;
+        }
+        .bar.large {
+            width: 0%;
+            background-color: #f0ad4e;
+        }
+        .bar-text {
+            position: relative;
+            top: -20px;
+            left: 10px;
+            font-size: 12px;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                display: block;
+                text-align: center;
+            }
+            .header .title-top {
+                display: block;
+            }
+            .header .title-bottom {
+                display: block;
+            }
+            .nav {
+                justify-content: center;
+            }
         }
     </style>
 </head>
-<body class="bg-light">
-    <header class="bg-white shadow-sm">
-        <div class="container py-3 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <img src="{{ asset('images/Logogram.png') }}" alt="Company Logo" class="mr-3" height="70" width="70">
-                <div>
-                    <h1 class="h4 mb-0">Employee Self Service</h1>
-                    <h2 class="h6 mb-0">Politeknik Astra</h2>
-                </div>
-            </div>
-            <nav class="d-flex flex-wrap align-items-center">
-                <a href="#" class="text-dark mx-2">Beranda</a>
-                <a href="#" class="text-dark mx-2">Kalender</a>
-                <a href="#" class="text-dark mx-2">Medical</a>
-                <div class="dropdown mx-2">
-                    <a href="#" class="text-dark dropdown-toggle" data-toggle="dropdown">Perizinan</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Submenu 1</a>
-                        <a class="dropdown-item" href="#">Submenu 2</a>
+<body>
+    <div class="header d-flex align-items-center flex-column flex-md-row">
+        <img src="{{ asset('images/Logogram.png') }}" alt="Company Logo">
+        <h1 class="ml-md-3 text-center text-md-left">
+            <span class="title-top">Employee Self Service</span>
+            <span class="title-bottom">Politeknik Astra</span>
+        </h1>
+        <nav class="ml-md-auto mt-3 mt-md-0">
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Beranda</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Kalender</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Medical</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="perizinanDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Perizinan
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="perizinanDropdown">
+                        <a class="dropdown-item" href="#">Option 1</a>
+                        <a class="dropdown-item" href="#">Option 2</a>
                     </div>
-                </div>
-                <a href="#" class="text-dark mx-2">Absensi</a>
-                <div class="dropdown mx-2">
-                    <a href="#" class="text-dark dropdown-toggle" data-toggle="dropdown">Laporan</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Submenu 1</a>
-                        <a class="dropdown-item" href="#">Submenu 2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Absensi</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="laporanDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Laporan
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="laporanDropdown">
+                        <a class="dropdown-item" href="#">Option 1</a>
+                        <a class="dropdown-item" href="#">Option 2</a>
                     </div>
-                </div>
-                <a href="#" class="text-dark mx-2">Lembur</a>
-                <a href="#" class="text-dark mx-2">Notifikasi <span class="badge badge-secondary">45686</span></a>
-                <div class="ml-auto d-flex align-items-center">
-                    <a href="#" class="text-dark mx-2">Hai, Ruci</a>
-                </div>
-            </nav>
-        </div>
-    </header>
-    <div class="container py-5">
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Lembur</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Notifikasi <span class="notification">45686</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Hai, Ruci</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="content container">
         @yield('content')
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

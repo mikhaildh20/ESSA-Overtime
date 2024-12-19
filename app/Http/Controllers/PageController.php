@@ -11,7 +11,7 @@ class PageController extends Controller
      */
     public function index()
     {
-        return view("layouts.pages.dashboard");
+        return view("layouts.pages.karyawan.pengajuan");
     }
 
     /**

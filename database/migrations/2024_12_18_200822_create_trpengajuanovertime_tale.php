@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dpo_trpengajuanovertime_tale', function (Blueprint $table) {
+        Schema::create('dpo_trpengajuanovertime', function (Blueprint $table) {
             $table->id('pjn_id');
             $table->string('pjn_type');
             $table->string('pjn_description');
