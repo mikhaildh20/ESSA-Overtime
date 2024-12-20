@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Models\Jabatan;
+use App\Models\Jabatan;
 
 class JabatanController extends Controller
 {
@@ -12,7 +12,8 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        return view('layouts.pages.master.karyawan.create');
+        $data = Jabatan::all();
+        return view('layouts.pages.master.jabatan.index',compact('data'));
     }
 
     /**
@@ -20,7 +21,7 @@ class JabatanController extends Controller
      */
     public function create()
     {
-        //
+        return view('layouts.pages.master.jabatan.create');
     }
 
     /**
@@ -28,7 +29,12 @@ class JabatanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'jbt_name' => 'required',
+        ]);
+
+        Post::create($request->all());
+        return redirect()->route('posts.index');
     }
 
     /**

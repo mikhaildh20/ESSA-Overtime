@@ -30,9 +30,10 @@
             </thead>
             <tbody>
                 <!-- Example Data Row 1 -->
+                @foreach($data as $d)
                 <tr>
-                    <td>1</td>
-                    <td>Jabatan A</td>
+                    <td>{{ loop->iteration }}</td>
+                    <td>{{ $d->jbt_name }}</td>
                     <td>
                         <button class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Edit
@@ -42,33 +43,7 @@
                         </button>
                     </td>
                 </tr>
-                <!-- Example Data Row 2 -->
-                <tr>
-                    <td>2</td>
-                    <td>Jabatan B</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </td>
-                </tr>
-                <!-- Example Data Row 3 -->
-                <tr>
-                    <td>3</td>
-                    <td>Jabatan C</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm">
-                            <i class="fas fa-trash-alt"></i> Delete
-                        </button>
-                    </td>
-                </tr>
-                <!-- Add more rows here as needed -->
+                @endforeach
             </tbody>
         </table>
     </div>
