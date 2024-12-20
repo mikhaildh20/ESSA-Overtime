@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Models\Jabatan;
 
 class JabatanController extends Controller
 {
@@ -11,7 +12,7 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        //
+        return view('layouts.pages.master.karyawan.index');
     }
 
     /**

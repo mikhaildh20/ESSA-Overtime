@@ -134,10 +134,10 @@
                         <td>${row.tanggal}</td>
                         <td>${row.status}</td>
                         <td>
-                            <a href="#" class="btn btn-sm"><i class="fas fa-pencil-alt text-primary"></i></a>
-                            <a href="#" class="btn btn-sm"><i class="fas fa-trash text-primary"></i></a>
-                            <a href="#" class="btn btn-sm"><i class="fas fa-bars text-primary"></i></a>
-                            <a href="#" class="btn btn-sm"><i class="fas fa-paper-plane text-primary"></i></a>
+                            <a href="#" class="me-2"><i class="fas fa-pencil-alt text-primary"></i></a>
+                            <a href="#" class="me-2"><i class="fas fa-trash text-primary"></i></a>
+                            <a href="#" class="me-2"><i class="fas fa-bars text-primary"></i></a>
+                            <a href="#"><i class="fas fa-paper-plane text-primary"></i></a>
                         </td>
                     </tr>
                 `);

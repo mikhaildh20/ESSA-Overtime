@@ -108,31 +108,10 @@
                     <a class="nav-link" href="#">Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Kalender</a>
+                    <a class="nav-link" href="#">Jabatan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Medical</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="perizinanDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Perizinan
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="perizinanDropdown">
-                        <a class="dropdown-item" href="#">Option 1</a>
-                        <a class="dropdown-item" href="#">Option 2</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Absensi</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="laporanDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Laporan
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="laporanDropdown">
-                        <a class="dropdown-item" href="#">Option 1</a>
-                        <a class="dropdown-item" href="#">Option 2</a>
-                    </div>
+                    <a class="nav-link" href="#">Karyawan</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Lembur</a>

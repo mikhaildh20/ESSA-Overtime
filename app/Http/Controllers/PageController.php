@@ -13,6 +13,7 @@ class PageController extends Controller
     {
         //return view("layouts.pages.karyawan.pengajuan");
         return view("layouts.pages.karyawan.detail");
+        //return view("layouts.pages.login");
     }
 
     /**

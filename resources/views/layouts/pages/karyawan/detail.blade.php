@@ -17,13 +17,14 @@
                 margin-top: 20px;
             }
             .document-item {
+                background-color: #f0f0f0;
+                padding: 10px; 
+                margin: 5px 0; 
+                border-radius: 5px;
+                border: 1px solid #a9a9a9;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 10px;
-            }
-            .document-item span {
-                font-weight: bold;
             }
             .btn-download {
                 background-color: #007bff;
@@ -86,20 +87,16 @@
 
         <!-- Supporting Documents Section -->
         <div class="document-container">
-            <div class="document-header">Dokumen Pendukung</div>
+            <label class="form-label">Dokumen Pendukung</label>
             <div class="document-item">
                 <span>Document_1.pdf</span>
-                <a href="#" class="btn-download">Unduh</a>
+                <a href="#" class="btn-download"><i class="fas fa-download"></i>  Unduh</a>
             </div>
             <!-- Add more document items here if needed -->
         </div>
-
-        <hr />
 
         <!-- Button Kembali -->
         <div class="text-start">
             <a href="#" class="btn btn-secondary">Kembali</a>
         </div>
-
-
 @endsection
