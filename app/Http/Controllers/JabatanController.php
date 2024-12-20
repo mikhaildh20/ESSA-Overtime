@@ -12,7 +12,7 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        return view('layouts.pages.master.karyawan.index');
+        return view('layouts.pages.master.karyawan.create');
     }
 
     /**
