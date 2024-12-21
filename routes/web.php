@@ -1,14 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
 
-// Route::get('/', [PageController::class, 'index']);
-Route::get('/', [JabatanController::class, 'index']);
+
+Route::get('/', function(){
+    return view('layouts.pages.dashboard');
+})->name('index');
+
 Route::resource('jabatan',JabatanController::class);
+Route::put('/jabatan/{id}/update_status', [JabatanController::class, 'update_status'])->name('jabatan.update_status');
+
 Route::resource('karyawan',KaryawanController::class);
 
 

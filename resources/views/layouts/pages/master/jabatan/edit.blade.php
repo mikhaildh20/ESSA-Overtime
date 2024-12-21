@@ -3,11 +3,11 @@
 @section('content')
 
     <div class="container my-5">
-        <h1 class="mb-4">Update Jabatan</h1>
+        <h1 class="mb-4">Ubah Jabatan</h1>
 
         <!-- Back Button -->
         <a href="{{ route('jabatan.index') }}" class="btn btn-secondary mb-3">
-            <i class="fas fa-arrow-left"></i> Back to Jabatan List
+            <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
         <!-- Jabatan Add Form -->
@@ -16,11 +16,11 @@
             @method('PUT')
             <div class="mb-3">
                 <label for="jbt_name" class="form-label">Nama Jabatan</label>
-                <input type="text" class="form-control" name="jbt_name" placeholder="Enter Nama Jabatan" value="{{ $jabatan->jbt_name }}" required>
+                <input type="text" class="form-control" name="jbt_name" placeholder="Masukkan Nama Jabatan" value="{{ $jabatan->jbt_name }}" required>
             </div>
 
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Update Jabatan
+                <i class="fas fa-save"></i> Ubah Jabatan
             </button>
         </form>
     </div>

@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Employee Self Service Politeknik Astra</title>
+    <link rel="icon" href="{{ asset('images/Logogram.png') }}" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap" rel="stylesheet"/>
@@ -105,7 +106,7 @@
         <nav class="ml-md-auto mt-3 mt-md-0">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Beranda</a>
+                    <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
