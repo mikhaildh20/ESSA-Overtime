@@ -8,8 +8,8 @@ use App\Http\Controllers\KaryawanController;
 
 // Route::get('/', [PageController::class, 'index']);
 Route::get('/', [JabatanController::class, 'index']);
-// Route::resource('jabatan',[JabatanController::class]);
-// Route::resource('karyawan',[KaryawanController::class]);
+Route::resource('jabatan',JabatanController::class);
+Route::resource('karyawan',KaryawanController::class);
 
 
 // Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -33,8 +33,12 @@ class JabatanController extends Controller
             'jbt_name' => 'required',
         ]);
 
-        Post::create($request->all());
-        return redirect()->route('posts.index');
+        $jabatan = new Jabatan();
+        $jabatan->jbt_name = $request['jbt_name'];
+        $jabatan->jbt_status = 1;
+        $jabatan->save();
+
+        return redirect()->route('jabatan.index')->with('success');
     }
 
     /**
@@ -48,9 +52,9 @@ class JabatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Jabatan $jabatan)
     {
-        //
+        return view('layouts.pages.master.jabatan.edit',compact('jabatan'));
     }
 
     /**
@@ -58,7 +62,7 @@ class JabatanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**

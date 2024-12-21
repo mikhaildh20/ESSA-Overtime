@@ -12,7 +12,19 @@
         <h1 class="mb-4">Jabatan Data</h1>
 
         <!-- Create Button -->
-        <a href="#" class="btn btn-primary mb-3">Create Jabatan</a>
+        <a href="{{ route('jabatan.create') }}" class="btn btn-primary mb-3">Create Jabatan</a>
+
+        @if(session('success'))
+            <div class="alert alert-success" role="alert">
+                Data has been saved successfully.
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                An error occured.
+            </div>
+        @endif
 
         <!-- Search and Filter -->
         <div class="search-container">
@@ -32,15 +44,15 @@
                 <!-- Example Data Row 1 -->
                 @foreach($data as $d)
                 <tr>
-                    <td>{{ loop->iteration }}</td>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $d->jbt_name }}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm">
+                        <a class="btn btn-warning btn-sm" href="{{ route('jabatan.edit',$d) }}">
                             <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm">
+                        </a>
+                        <a class="btn btn-danger btn-sm" href="">
                             <i class="fas fa-trash-alt"></i> Delete
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 @endforeach
