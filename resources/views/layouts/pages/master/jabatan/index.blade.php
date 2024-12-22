@@ -50,56 +50,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <!-- Example Data Row 1 -->
-                @foreach($data as $d)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $d->jbt_name }}</td>
-                    <td>
-                        <a class="btn btn-warning btn-sm" href="{{ route('jabatan.edit', $d) }}">
-                            <i class="fas fa-edit"></i> Ubah
-                        </a>
 
-                        <!-- Button to trigger modal -->
-                        @if($d->jbt_status == 1)
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $d->jbt_id }}">
-                            <i class="fas fa-trash-alt"></i> Hapus
-                        </button>
-                        @else
-                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $d->jbt_id }}">
-                            <i class="fas fa-undo"></i> Aktif
-                        </button>
-                        @endif
-                    </td>
-                </tr>
-
-                <!-- Modal -->
-                <div class="modal fade" id="confirmModal-{{ $d->jbt_id }}" tabindex="-1" aria-labelledby="confirmModalLabel-{{ $d->jbt_id }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmModalLabel-{{ $d->jbt_id }}">
-                                    Confirm {{ $d->jbt_status == 1 ? 'Hapus' : 'Aktif' }}
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Apakah anda yakin akan {{ $d->jbt_status == 1 ? 'hapus' : 'aktifkan' }} jabatan "{{ $d->jbt_name }}"?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <form action="{{ route('jabatan.update_status', $d->jbt_id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="btn {{ $d->jbt_status == 1 ? 'btn-danger' : 'btn-success' }}">
-                                        Iya, {{ $d->jbt_status == 1 ? 'Hapus' : 'Aktif' }}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
             </tbody>
         </table>
         <nav>
@@ -112,58 +63,144 @@
     <!-- Bootstrap JS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Function to search and filter the table rows
-        function searchTable() {
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById('searchInput');
-            filter = input.value.toUpperCase();
-            table = document.getElementById('jabatanTable');
-            tr = table.getElementsByTagName('tr');
-
-            for (i = 1; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName('td')[1]; // Nama Jabatan column
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-
         const data = @json($data);
         const rowsPerPage = 8;
         let currentPage = 1;
+        let filteredData = data;
 
         function displayTable() {
-            const startIndex = (currentPage -  1) * rowsPerPage;
+            const startIndex = (currentPage - 1) * rowsPerPage;
             const endIndex = startIndex + rowsPerPage;
             const paginatedData = filteredData.slice(startIndex, endIndex);
 
             const tableBody = $("#tableBody");
             tableBody.empty();
 
+            let i = startIndex + 1;
+
             paginatedData.forEach(row => {
+                let actionButton = '';
+
+                if (row.jbt_status === 1) {
+                    actionButton = `
+                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${row.jbt_id}" data-status="${row.jbt_status}">
+                            <i class="fas fa-trash-alt"></i> Hapus
+                        </button>
+                    `;
+                } else {
+                    actionButton = `
+                        <button type="button" class="btn btn-success btn-sm active-btn" data-id="${row.jbt_id}" data-status="${row.jbt_status}">
+                            <i class="fas fa-check-circle"></i> Active
+                        </button>
+                    `;
+                }
+
                 tableBody.append(`
-                    <tr class="text-center">
-                        <td>${row.no}</td>
-                        <td>${row.nidn}</td>
-                        <td>${row.nama}</td>
-                        <td>${row.jenis}</td>
-                        <td>${row.tanggal}</td>
-                        <td>${row.status}</td>
+                    <tr>
+                        <td>${i}</td>
+                        <td>${row.jbt_name}</td>
                         <td>
-                            <a href="#" class="me-2"><i class="fas fa-pencil-alt text-primary"></i></a>
-                            <a href="#" class="me-2"><i class="fas fa-trash text-primary"></i></a>
-                            <a href="#" class="me-2"><i class="fas fa-bars text-primary"></i></a>
-                            <a href="#"><i class="fas fa-paper-plane text-primary"></i></a>
+                            <form action="/jabatan/${row.jbt_id}/update_status" method="POST">
+                                @csrf
+                                @method('put')
+                                <a class="btn btn-warning btn-sm" href="/jabatan/${row.jbt_id}/edit">
+                                    <i class="fas fa-edit"></i> Ubah
+                                </a>
+                                ${actionButton}
+                            </form>
                         </td>
                     </tr>
                 `);
+                i++;
             });
         }
+
+
+        function setupPagination() {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            const pagination = $("#pagination");
+            pagination.empty();
+
+            const maxPageButtons = 5; // Maximum number of page buttons to display
+            let startPage, endPage;
+
+            if (totalPages <= maxPageButtons) {
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                const halfMaxPageButtons = Math.floor(maxPageButtons / 2);
+                if (currentPage <= halfMaxPageButtons) {
+                    startPage = 1;
+                    endPage = maxPageButtons;
+                } else if (currentPage + halfMaxPageButtons >= totalPages) {
+                    startPage = totalPages - maxPageButtons + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - halfMaxPageButtons;
+                    endPage = currentPage + halfMaxPageButtons;
+                }
+            }
+
+            // Add Previous button
+            pagination.append(`
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" id="prevPage">Prev</a>
+                </li>
+            `);
+
+            // Add page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.append(`
+                    <li class="page-item ${i === currentPage ? "active" : ""}">
+                        <a class="page-link" href="#">${i}</a>
+                    </li>
+                `);
+            }
+
+            // Add Next button
+            pagination.append(`
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" id="nextPage">Next</a>
+                </li>
+            `);
+
+            // Event handlers for page links
+            $(".page-link").on("click", function (e) {
+                e.preventDefault();
+                const pageNum = $(this).text();
+                if (pageNum === "Prev") {
+                    if (currentPage > 1) {
+                        currentPage--;
+                    }
+                } else if (pageNum === "Next") {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                    }
+                } else {
+                    currentPage = parseInt(pageNum);
+                }
+                displayTable();
+                setupPagination();
+            });
+        }
+
+        function filterData() {
+            const searchQuery = $("#searchInput").val().toLowerCase();
+            filteredData = data.filter(row => row.jbt_name.toLowerCase().includes(searchQuery));
+            currentPage = 1; // Reset to first page on search
+            displayTable();
+            setupPagination();
+        }
+
+        $("#searchInput").on("input", function () {
+            filterData();
+        });
+
+        // Call the function to display the table
+        $(document).ready(function() {
+            displayTable();
+            setupPagination();
+        });
     </script>
 
 @endsection

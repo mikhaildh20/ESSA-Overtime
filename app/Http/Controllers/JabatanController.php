@@ -59,8 +59,9 @@ class JabatanController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Jabatan $jabatan)
+    public function edit(string $id)
     {
+        $jabatan = Jabatan::findOrFail($id);
         return view('layouts.pages.master.jabatan.edit',compact('jabatan'));
     }
 
