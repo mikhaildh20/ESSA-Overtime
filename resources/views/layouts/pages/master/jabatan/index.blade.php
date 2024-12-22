@@ -60,6 +60,26 @@
         </nav>
     </div>
 
+    <!-- Modal HTML -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin melanjutkan tindakan ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmActionButton">Ya, Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Bootstrap JS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -67,6 +87,7 @@
         const rowsPerPage = 8;
         let currentPage = 1;
         let filteredData = data;
+        let currentActionUrl = ''; 
 
         function displayTable() {
             const startIndex = (currentPage - 1) * rowsPerPage;
@@ -81,37 +102,53 @@
             paginatedData.forEach(row => {
                 let actionButton = '';
 
-                if (row.jbt_status === 1) {
+                if (row.jbt_status == 1) {
                     actionButton = `
-                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-id="${row.jbt_id}" data-status="${row.jbt_status}">
+                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-action="/jabatan/${row.jbt_id}/update_status" data-method="PUT">
                             <i class="fas fa-trash-alt"></i> Hapus
                         </button>
                     `;
                 } else {
                     actionButton = `
-                        <button type="button" class="btn btn-success btn-sm active-btn" data-id="${row.jbt_id}" data-status="${row.jbt_status}">
-                            <i class="fas fa-check-circle"></i> Active
+                        <button type="button" class="btn btn-success btn-sm active-btn" data-action="/jabatan/${row.jbt_id}/update_status" data-method="PUT">
+                            <i class="fas fa-check-circle"></i> Aktifkan
                         </button>
                     `;
                 }
-
+                
+                const sanitizedName = $('<div>').text(row.jbt_name).html();
                 tableBody.append(`
                     <tr>
                         <td>${i}</td>
-                        <td>${row.jbt_name}</td>
+                        <td>${sanitizedName}</td>
                         <td>
-                            <form action="/jabatan/${row.jbt_id}/update_status" method="POST">
-                                @csrf
-                                @method('put')
-                                <a class="btn btn-warning btn-sm" href="/jabatan/${row.jbt_id}/edit">
-                                    <i class="fas fa-edit"></i> Ubah
-                                </a>
-                                ${actionButton}
-                            </form>
+                            <a class="btn btn-warning btn-sm" href="/jabatan/${row.jbt_id}/edit">
+                                <i class="fas fa-edit"></i> Ubah
+                            </a>
+                            ${actionButton}
                         </td>
                     </tr>
                 `);
                 i++;
+            });
+
+            // Attach click event to the buttons
+            $(".delete-btn, .active-btn").on("click", function () {
+                currentActionUrl = $(this).data("action"); // Set the form action URL
+                $("#confirmationModal").modal("show");
+            });
+
+            $("#confirmActionButton").on("click", function () {
+                const form = $('<form>', {
+                    action: currentActionUrl,
+                    method: 'POST'
+                }).append(`
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="_method" value="PUT">
+                `);
+
+                $('body').append(form);
+                form.submit();
             });
         }
 
