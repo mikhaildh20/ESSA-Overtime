@@ -37,7 +37,9 @@
 
         <!-- Search and Filter -->
         <div class="search-container">
-            <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Jabatan..." onkeyup="searchTable()">
+            <form action="{{ route('jabatan.index') }}" method="GET">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Jabatan..." name="search" value="{{ request()->input('search') }}">
+            </form>
         </div>
 
         <!-- Table -->
@@ -45,199 +47,106 @@
             <thead>
                 <tr>
                     <th>No.</th>
-                    <th>Nama Jabatan</th>
+                    <th>
+                        <a href="{{ route('jabatan.index', ['sort' => $sort == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" style="text-decoration: none; color: black;">
+                            Nama Jabatan
+                            @if($sort == 'asc')
+                                <i class="fas fa-sort-alpha-down"></i>
+                            @else
+                                <i class="fas fa-sort-alpha-up"></i>
+                            @endif
+                        </a>
+                    </th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
+                @foreach($dto as $d)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $d->jbt_name }}</td>
+                    <td>
+                        <form action="{{ route('jabatan.update_status', $d->jbt_id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <a href="{{ route('jabatan.edit', $d->jbt_id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Ubah
+                            </a>
 
+                            <!-- Modal Trigger untuk Hapus atau Aktif -->
+                            @if($d->jbt_status == 1)
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                        data-action="{{ route('jabatan.update_status', $d->jbt_id) }}" 
+                                        data-status="inactive" data-id="{{ $d->jbt_id }}">
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                                </button>
+                            @else
+                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                        data-action="{{ route('jabatan.update_status', $d->jbt_id) }}" 
+                                        data-status="active" data-id="{{ $d->jbt_id }}">
+                                    <i class="fas fa-check-circle"></i> Aktif
+                                </button>
+                            @endif
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
-        <nav>
-            <ul class="pagination justify-content-start" id="pagination">
-                <!-- Pagination buttons will be populated by JavaScript -->
-            </ul>
-        </nav>
-    </div>
 
-    <!-- Modal HTML -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="mt-4">
+            {{ $pagination->links('vendor.pagination.bootstrap-5') }}
+        </div>
+
+
+    <!-- Modal Konfirmasi -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi</h5>
+                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Aksi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin melanjutkan tindakan ini?
+                    <p id="modalMessage">Apakah Anda yakin ingin melakukan aksi ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" id="confirmActionButton">Ya, Lanjutkan</button>
+                    <form id="confirmForm" action="" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-danger" id="confirmButton">Ya, Lanjutkan</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-
     <!-- Bootstrap JS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const data = @json($data);
-        const rowsPerPage = 8;
-        let currentPage = 1;
-        let filteredData = data;
-        let currentActionUrl = ''; 
+        // Tangkap event saat tombol di klik
+        const modal = document.getElementById('confirmModal');
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Tombol yang di klik
+            const actionUrl = button.getAttribute('data-action'); // Ambil URL aksi
+            const status = button.getAttribute('data-status'); // Ambil status
+            const id = button.getAttribute('data-id'); // Ambil ID
 
-        function displayTable() {
-            const startIndex = (currentPage - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            const paginatedData = filteredData.slice(startIndex, endIndex);
+            // Update form action dan message sesuai dengan status
+            const form = document.getElementById('confirmForm');
+            form.action = actionUrl;
 
-            const tableBody = $("#tableBody");
-            tableBody.empty();
-
-            let i = startIndex + 1;
-
-            paginatedData.forEach(row => {
-                let actionButton = '';
-
-                if (row.jbt_status == 1) {
-                    actionButton = `
-                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-action="/jabatan/${row.jbt_id}/update_status" data-method="PUT">
-                            <i class="fas fa-trash-alt"></i> Hapus
-                        </button>
-                    `;
-                } else {
-                    actionButton = `
-                        <button type="button" class="btn btn-success btn-sm active-btn" data-action="/jabatan/${row.jbt_id}/update_status" data-method="PUT">
-                            <i class="fas fa-check-circle"></i> Aktifkan
-                        </button>
-                    `;
-                }
-                
-                const sanitizedName = $('<div>').text(row.jbt_name).html();
-                tableBody.append(`
-                    <tr>
-                        <td>${i}</td>
-                        <td>${sanitizedName}</td>
-                        <td>
-                            <a class="btn btn-warning btn-sm" href="/jabatan/${row.jbt_id}/edit">
-                                <i class="fas fa-edit"></i> Ubah
-                            </a>
-                            ${actionButton}
-                        </td>
-                    </tr>
-                `);
-                i++;
-            });
-
-            // Attach click event to the buttons
-            $(".delete-btn, .active-btn").on("click", function () {
-                currentActionUrl = $(this).data("action"); // Set the form action URL
-                $("#confirmationModal").modal("show");
-            });
-
-            $("#confirmActionButton").on("click", function () {
-                const form = $('<form>', {
-                    action: currentActionUrl,
-                    method: 'POST'
-                }).append(`
-                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="_method" value="PUT">
-                `);
-
-                $('body').append(form);
-                form.submit();
-            });
-        }
-
-
-        function setupPagination() {
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            const pagination = $("#pagination");
-            pagination.empty();
-
-            const maxPageButtons = 5; // Maximum number of page buttons to display
-            let startPage, endPage;
-
-            if (totalPages <= maxPageButtons) {
-                startPage = 1;
-                endPage = totalPages;
+            const message = document.getElementById('modalMessage');
+            if (status === 'active') {
+                message.textContent = 'Apakah Anda yakin ingin mengaktifkan jabatan ini?';
             } else {
-                const halfMaxPageButtons = Math.floor(maxPageButtons / 2);
-                if (currentPage <= halfMaxPageButtons) {
-                    startPage = 1;
-                    endPage = maxPageButtons;
-                } else if (currentPage + halfMaxPageButtons >= totalPages) {
-                    startPage = totalPages - maxPageButtons + 1;
-                    endPage = totalPages;
-                } else {
-                    startPage = currentPage - halfMaxPageButtons;
-                    endPage = currentPage + halfMaxPageButtons;
-                }
+                message.textContent = 'Apakah Anda yakin ingin menghapus jabatan ini?';
             }
 
-            // Add Previous button
-            pagination.append(`
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" id="prevPage">Prev</a>
-                </li>
-            `);
-
-            // Add page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                pagination.append(`
-                    <li class="page-item ${i === currentPage ? "active" : ""}">
-                        <a class="page-link" href="#">${i}</a>
-                    </li>
-                `);
-            }
-
-            // Add Next button
-            pagination.append(`
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" id="nextPage">Next</a>
-                </li>
-            `);
-
-            // Event handlers for page links
-            $(".page-link").on("click", function (e) {
-                e.preventDefault();
-                const pageNum = $(this).text();
-                if (pageNum === "Prev") {
-                    if (currentPage > 1) {
-                        currentPage--;
-                    }
-                } else if (pageNum === "Next") {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                    }
-                } else {
-                    currentPage = parseInt(pageNum);
-                }
-                displayTable();
-                setupPagination();
-            });
-        }
-
-        function filterData() {
-            const searchQuery = $("#searchInput").val().toLowerCase();
-            filteredData = data.filter(row => row.jbt_name.toLowerCase().includes(searchQuery));
-            currentPage = 1; // Reset to first page on search
-            displayTable();
-            setupPagination();
-        }
-
-        $("#searchInput").on("input", function () {
-            filterData();
-        });
-
-        // Call the function to display the table
-        $(document).ready(function() {
-            displayTable();
-            setupPagination();
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.classList.toggle('btn-danger', status === 'inactive');
+            confirmButton.classList.toggle('btn-success', status === 'active');
         });
     </script>
-
 @endsection

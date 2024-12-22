@@ -15,7 +15,7 @@
             @csrf
             <div class="mb-3">
                 <label for="jbt_name" class="form-label">Nama Jabatan</label>
-                <input type="text" class="form-control" name="jbt_name" placeholder="Masukkan Nama Jabatan" required>
+                <input type="text" class="form-control" name="jbt_name" placeholder="Masukkan Nama Jabatan" value="{{ old('jbt_name') }}" required>
             </div>
 
             <button type="submit" class="btn btn-primary">
