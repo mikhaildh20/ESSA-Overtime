@@ -16,4 +16,8 @@ class Jabatan extends Model
         'jbt_name',
         'jbt_status'
     ];
+
+    public function dpo_mskaryawan(){
+        return $this->hasMany(Karyawan::class,'jbt_id','jbt_id');//kiri column asal, kanan column foreign key
+    }
 }

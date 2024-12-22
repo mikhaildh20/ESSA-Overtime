@@ -113,7 +113,7 @@
                     <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Karyawan</a>
+                    <a class="nav-link" href="{{ route('karyawan.index') }}">Karyawan</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Lembur</a>

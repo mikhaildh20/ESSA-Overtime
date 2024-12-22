@@ -19,6 +19,13 @@ class Karyawan extends Model
         'kry_username',
         'kry_password',
         'kry_email',
-        'kry_status'
+        'kry_status',
+        'kry_created_by',
+        'kry_modified_by'
     ];
+
+    public function dpo_msjabatan()
+    {
+        return $this->belongsTo(Jabatan::class,'jbt_id','jbt_id');//kiri column sumber, kanan column utama 
+    }
 }

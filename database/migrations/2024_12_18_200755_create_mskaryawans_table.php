@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('kry_id');
             $table->string('kry_id_alternative');
             $table->string('kry_name');
+            $table->unsignedBigInteger('jbt_id');
             $table->string('kry_username');
             $table->string('kry_password');
             $table->string('kry_email');
@@ -22,6 +23,8 @@ return new class extends Migration
             $table->string('kry_created_by');
             $table->string('kry_modified_by');
             $table->timestamps();
+
+            $table->foreign('jbt_id')->references('jbt_id')->on('dpo_msjabatan')->onDelete('restrict');
         });
     }
 
