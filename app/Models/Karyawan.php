@@ -9,7 +9,7 @@ class Karyawan extends Model
 {
     use HasFactory;
 
-    protected $table = 'dpo_mskaryawans';
+    protected $table = 'dpo_mskaryawan';
     protected $primaryKey = 'kry_id';
     public $incrementing = true;
     protected $fillable = [

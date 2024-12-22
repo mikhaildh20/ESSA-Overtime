@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Karyawan;
-use App\DataTransferObjects\KaryawanDto;
 
-class KaryawanController extends Controller
+class SsoController extends Controller
 {
     /**
      * Display a listing of the resource.

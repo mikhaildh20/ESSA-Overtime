@@ -4,14 +4,18 @@ namespace App\DataTransferObjects;
 
 class KaryawanDto
 {
-    // public $jbt_id;
-    // public $jbt_name;
-    // public $jbt_status;
+    public $kry_id_alternative;
+    public $kry_name;
+    public $kry_username;
+    public $kry_email;
+    public $kry_status;
 
-    // public function __construct($jbt_id, $jbt_name, $jbt_status)
-    // {
-    //     $this->jbt_id = $jbt_id;
-    //     $this->jbt_name = $jbt_name;
-    //     $this->jbt_status = $jbt_status;
-    // }
+    public function __construct($kry_id_alternative, $kry_name, $kry_username, $kry_email, $kry_status)
+    {
+        $this->kry_id_alternative;
+        $this->kry_name;
+        $this->kry_username;
+        $this->kry_email;
+        $this->kry_status;
+    }
 }
