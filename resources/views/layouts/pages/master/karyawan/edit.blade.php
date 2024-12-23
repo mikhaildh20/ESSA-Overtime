@@ -21,9 +21,10 @@
         @endif
 
         <!-- Karyawan Add Form -->
-        <form action="{{ route('karyawan.update',$karyawan->kry_id_alternative) }}" method="POST">
+        <form action="{{ route('karyawan.update', $karyawan->kry_id_alternative) }}" method="POST">
             @csrf
             @method('PUT')
+            
             <!-- Nama Karyawan -->
             <div class="mb-3">
                 <label for="nama" class="form-label">Nama Karyawan</label>
@@ -52,6 +53,19 @@
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" name="kry_email" placeholder="Masukkan Email" value="{{ $karyawan->kry_email }}" required>
             </div>
+
+            <!-- Check if Email Changed -->
+            @if($karyawan->kry_email !== old('kry_email'))
+                <div class="mb-3">
+                    <label for="send_password" class="form-label">Kirim Password ke Email Baru</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="send_password" id="send_password">
+                        <label class="form-check-label" for="send_password">
+                            Centang untuk mengirim password ke email baru
+                        </label>
+                    </div>
+                </div>
+            @endif
 
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Simpan Data Karyawan
