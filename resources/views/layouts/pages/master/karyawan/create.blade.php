@@ -10,6 +10,13 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
+
         <!-- Karyawan Add Form -->
         <form action="{{ route('karyawan.store') }}" method="POST">
             @csrf

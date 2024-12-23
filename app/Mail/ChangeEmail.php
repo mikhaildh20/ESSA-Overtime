@@ -16,14 +16,15 @@ class ChangeEmail extends Mailable
     public $admin;
     public $name;
     public $username;
-    public $password;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($admin, $name, $username)
     {
-        //
+        $this->admin = $admin;
+        $this->name = $name;
+        $this->username = $username;
     }
 
     /**
@@ -32,7 +33,7 @@ class ChangeEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Change Email',
+            subject: 'Detail Perubahan [ESSA Politeknik Astra]',
         );
     }
 
@@ -42,7 +43,7 @@ class ChangeEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.emailchanged',
         );
     }
 

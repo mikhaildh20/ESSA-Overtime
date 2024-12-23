@@ -10,8 +10,14 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Karyawan Add Form -->
-        <form action="{{ route('karyawan.update',$karyawan->kry_id_alternative) }}" method="POST">
+        <form id="karyawanForm" action="{{ route('karyawan.update',$karyawan->kry_id_alternative) }}" method="POST">
             @csrf
             @method('PUT')
             <!-- Nama Karyawan -->
@@ -52,10 +58,29 @@
                 @enderror
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmationModal">
                 <i class="fas fa-save"></i> Simpan Data Karyawan
             </button>
         </form>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Aksi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menyimpan perubahan ini? Data yang Anda ubah akan tercatat dan dapat dipertanggungjawabkan.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Ya, Simpan Data</button>
+            </div>
+            </div>
+        </div>
     </div>
 
 @endsection

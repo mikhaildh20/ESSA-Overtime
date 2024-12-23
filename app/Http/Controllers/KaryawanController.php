@@ -135,13 +135,17 @@ class KaryawanController extends Controller
         // Menyimpan data karyawan baru ke dalam database
         $karyawan->save();
 
-        // Mengirim email kepada karyawan yang baru dibuat, berisi username dan password sementara
-        Mail::to($karyawan->kry_email)->send(new SendEmail(
-            $karyawan->kry_created_by, 
-            $karyawan->kry_name, 
-            $karyawan->kry_username, 
-            $randomPassword
-        ));
+        try{
+            // Mengirim email kepada karyawan yang baru dibuat, berisi username dan password sementara
+            Mail::to($karyawan->kry_email)->send(new SendEmail(
+                $karyawan->kry_created_by, 
+                $karyawan->kry_name, 
+                $karyawan->kry_username, 
+                $randomPassword
+            ));
+        }catch(\Exception $e){
+            return redirect()->route('karyawan.create')->with('error','Terjadi kesalahan, hubungi Tim IT!');
+        }
 
         // Mengalihkan pengguna ke halaman daftar karyawan dengan pesan sukses
         return redirect()->route('karyawan.index')->with('success', 'Data berhasil ditambah!');
@@ -233,9 +237,26 @@ class KaryawanController extends Controller
 
         // Cek apakah email telah diubah
         if ($oldEmail !== $karyawan->kry_email) {
-            // Lakukan sesuatu jika email berubah, misalnya kirim notifikasi
-            // Contoh: Kirim email notifikasi tentang perubahan email
-            // Mail::to($karyawan->kry_email)->send(new EmailChangedNotification($karyawan));
+            try{
+            
+                    // Lakukan sesuatu jika email berubah, misalnya kirim notifikasi
+                    // Contoh: Kirim email notifikasi tentang perubahan email
+                    // mengirim ke email lama
+                    Mail::to($oldEmail)->send(new NotifikasiEmail(
+                        $karyawan->kry_modified_by,
+                        $karyawan->kry_name,
+                        $karyawan->kry_email
+                    ));
+                    // mengirim ke email baru
+                    Mail::to($karyawan->kry_email)->send(new EmailChangedNotification(
+                        $karyawan->kry_modified_by,
+                        $karyawan->kry_name,
+                        $karyawan->kry_username
+                    ));
+                
+            }catch(\Exception $e){
+                return redirect()->route('karyawan.edit')->with('error','Terjadi kesalahan, hubungi Tim IT!');
+            }
         }
 
         // Redirect pengguna ke halaman daftar karyawan.

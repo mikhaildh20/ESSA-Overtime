@@ -20,9 +20,11 @@ class NotifikasiEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($admin, $name, $email)
     {
-        //
+        $this->admin = $admin;
+        $this->name = $name;
+        $this->email = $email;
     }
 
     /**
@@ -31,7 +33,7 @@ class NotifikasiEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Notifikasi Email',
+            subject: 'Perubahan Alamat Email [ESSA Politeknik Astra]',
         );
     }
 
@@ -41,7 +43,7 @@ class NotifikasiEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'mail.emailnotify',
         );
     }
 
