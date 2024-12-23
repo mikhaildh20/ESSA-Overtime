@@ -10,6 +10,8 @@ use App\DataTransferObjects\JabatanDto;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Mail\SendEmail;
+use App\Mail\NotifikasiEmail;
+use App\Mail\ChangeEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 
@@ -248,7 +250,7 @@ class KaryawanController extends Controller
                         $karyawan->kry_email
                     ));
                     // mengirim ke email baru
-                    Mail::to($karyawan->kry_email)->send(new EmailChangedNotification(
+                    Mail::to($karyawan->kry_email)->send(new ChangeEmail(
                         $karyawan->kry_modified_by,
                         $karyawan->kry_name,
                         $karyawan->kry_username
@@ -274,6 +276,18 @@ class KaryawanController extends Controller
 
     public function update_status(string $id)
     {
+         // Cari karyawan berdasarkan Alternative ID
+        $karyawan = Karyawan::where('kry_id_alternative',$id)->firstOrFail();
 
+        // Menentukan status dan pesan berdasarkan status karyawan saat ini
+        $status = $karyawan->kry_status == 1 ? 0 : 1;
+        $message = $status == 1 ? "Data diaktifkan!" : "Data dihapus!";
+
+        // Menyimpan perubahan status
+        $karyawan->kry_status = $status;
+        $karyawan->save();
+
+        // Mengalihkan dan memberikan pesan status yang sesuai
+        return redirect()->route('karyawan.index')->with('success', $message);
     }
 }

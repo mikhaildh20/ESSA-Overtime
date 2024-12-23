@@ -48,7 +48,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                @foreach($dto as $d)
+                @forelse($dto as $d)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $d->jbt_name }}</td>
@@ -77,7 +77,11 @@
                         </form>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="3" class="text-center">Belum ada data.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
 

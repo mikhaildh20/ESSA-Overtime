@@ -52,7 +52,7 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                @foreach($dto as $d)
+                @forelse($dto as $d)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $d->kry_name }}</td>
@@ -84,9 +84,14 @@
                         </form>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="6" class="text-center">Belum ada data.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
+
 
         <div class="mt-4">
             {{ $pagination->links('vendor.pagination.bootstrap-5') }}
