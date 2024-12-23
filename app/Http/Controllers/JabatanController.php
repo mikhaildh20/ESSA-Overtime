@@ -59,19 +59,16 @@ class JabatanController extends Controller
     {
         // Validasi input dengan aturan yang lebih ketat
         $request->validate([
-            'jbt_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/', // hanya huruf dan spasi
+            'jbt_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/|unique:dpo_msjabatan,jbt_name', // hanya huruf dan spasi
+        ],[
+            'jbt_name.regex' => 'Nama jabatan hanya bisa diisi huruf dan spasi.',
+            'jbt_name.unique' => 'Data sudah ada.'
         ]);
 
         // Membuat instance Jabatan baru
         $jabatan = new Jabatan();
         $jabatan->jbt_name = $request->input('jbt_name');
         $jabatan->jbt_status = 1;
-
-        // Memeriksa apakah sudah ada data dengan nama yang sama
-        if (Jabatan::where('jbt_name', $jabatan->jbt_name)->exists()) {
-            // Jika ada, kembalikan dengan pesan error
-            return redirect()->route('jabatan.index')->with('error', 'Data sudah ada!');
-        }
 
         // Menyimpan data jabatan baru
         $jabatan->save();
@@ -103,27 +100,17 @@ class JabatanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Validasi input untuk memastikan nama jabatan valid
+        // Validasi input dengan aturan yang lebih ketat
         $request->validate([
-            'jbt_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/', // memastikan hanya huruf dan spasi
+            'jbt_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/|unique:dpo_msjabatan,jbt_name', // hanya huruf dan spasi
+        ],[
+            'jbt_name.regex' => 'Nama jabatan hanya bisa diisi huruf dan spasi.',
+            'jbt_name.unique' => 'Data sudah ada.'
         ]);
 
         // Mencari jabatan berdasarkan ID
         $jabatan = Jabatan::findOrFail($id);
         $jabatan->jbt_name = $request['jbt_name'];
-
-        // Memeriksa apakah ada jabatan lain dengan nama yang sama
-        $check = Jabatan::where('jbt_name', $jabatan->jbt_name)->first();
-
-        // Cek jika ada jabatan dengan nama yang sama tetapi bukan yang sedang diupdate
-        if ($check && $check->id !== $jabatan->id) {
-            return redirect()->route('jabatan.index')->with('error', 'Data sudah ada!');
-        }
-
-        // Cek jika nama jabatan tidak berubah
-        if ($check && $check->id === $jabatan->id) {
-            return redirect()->route('jabatan.index')->with('warning', 'Data tidak diubah.');
-        }
 
         // Menyimpan perubahan data jabatan
         $jabatan->save();

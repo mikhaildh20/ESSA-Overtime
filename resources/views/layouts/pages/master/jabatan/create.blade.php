@@ -10,6 +10,12 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
+        @error('jbt_name')
+            <div class="alert alert-danger" role="alert">
+                {{ $message }}
+            </div>
+        @enderror
+
         <!-- Jabatan Add Form -->
         <form action="{{ route('jabatan.store') }}" method="POST">
             @csrf

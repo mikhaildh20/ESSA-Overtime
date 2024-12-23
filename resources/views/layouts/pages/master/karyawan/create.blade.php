@@ -10,6 +10,16 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Karyawan Add Form -->
         <form action="{{ route('karyawan.store') }}" method="POST">
             @csrf
@@ -25,7 +35,7 @@
                 <select name="jbt_id" class="form-control" required>
                     <option value="">-- Pilih Jabatan --</option>
                     @foreach($dto as $d)
-                        <option value="{{ $d->jbt_id }}" {{ old('jbt_id') == '$d->jbt_id' ? 'selected' : '' }}>{{ $d->jbt_name }}</option>
+                        <option value="{{ $d->jbt_id }}" {{ old('jbt_id') == $d->jbt_id ? 'selected' : '' }}>{{ $d->jbt_name }}</option>
                     @endforeach
                 </select>
             </div>

@@ -23,18 +23,6 @@
             </div>
         @endif
 
-        @if(session('warning'))
-            <div class="alert alert-warning" role="alert">
-                {{ session('warning') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger" role="alert">
-                {{ session('error') }}
-            </div>
-        @endif
-
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('karyawan.index') }}" method="GET">

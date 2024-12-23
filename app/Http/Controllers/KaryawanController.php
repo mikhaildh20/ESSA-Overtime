@@ -9,6 +9,8 @@ use App\Models\Jabatan;
 use App\DataTransferObjects\JabatanDto;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 
 class KaryawanController extends Controller
 {
@@ -79,10 +81,16 @@ class KaryawanController extends Controller
     {
         // Validasi input dengan aturan yang lebih ketat
         $request->validate([
-            'kry_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/', // hanya huruf dan spasi
+            'kry_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/|unique:dpo_mskaryawan,kry_name', // hanya huruf dan spasi
             'jbt_id' => 'required',
-            'kry_username' => 'required|unique:karyawan,kry_username', // memastikan username unik
-            'kry_email' => 'required|email|unique:karyawan,kry_email' // validasi email dan keunikan
+            'kry_username' => 'required|unique:dpo_mskaryawan,kry_username', // memastikan username unik
+            'kry_email' => 'required|email|unique:dpo_mskaryawan,kry_email' // validasi email dan keunikan
+        ],[
+            'kry_name.regex' => 'Nama karyawan hanya bisa diisi huruf dan spasi.',
+            'kry_name.unique' => 'Karyawan telah terdaftar',
+            'kry_username.unique' => 'Username tidak tersedia.',
+            'kry_email.unique' => 'Email sudah terdaftar.',
+            'kry_email.email' => 'Format email tidak valid.'
         ]);
 
         // Mengambil data karyawan terakhir berdasarkan ID alternatif
@@ -116,14 +124,11 @@ class KaryawanController extends Controller
         $karyawan->kry_created_by = 'mike';
         $karyawan->kry_modified_by = 'mike';
 
-        // Memeriksa apakah sudah ada data dengan nama yang sama
-        if (Karyawan::where('kry_name', $karyawan->kry_name)->exists()) {
-            // Jika ada, kembalikan dengan pesan error
-            return redirect()->route('karyawan.index')->with('error', 'Data sudah ada!');
-        }
-
         // Menyimpan data karyawan baru
         $karyawan->save();
+
+        //kirim email
+        Mail::to($karyawan->kry_email)->send(new SendEmail($karyawan->kry_created_by, $karyawan->kry_name, $karyawan->kry_username,$randomPassword));
 
         // Kembali dengan pesan sukses
         return redirect()->route('karyawan.index')->with('success', 'Data berhasil ditambah!');
