@@ -9,13 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NotifikasiEmail extends Mailable
+class ChangeEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $admin;
     public $name;
-    public $email;
+    public $username;
+    public $password;
 
     /**
      * Create a new message instance.
@@ -31,7 +32,7 @@ class NotifikasiEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Notifikasi Email',
+            subject: 'Change Email',
         );
     }
 

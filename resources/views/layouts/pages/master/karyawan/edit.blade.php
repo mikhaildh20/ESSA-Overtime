@@ -10,29 +10,21 @@
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <!-- Karyawan Add Form -->
-        <form action="{{ route('karyawan.update', $karyawan->kry_id_alternative) }}" method="POST">
+        <form action="{{ route('karyawan.update',$karyawan->kry_id_alternative) }}" method="POST">
             @csrf
             @method('PUT')
-            
             <!-- Nama Karyawan -->
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="nama" class="form-label">Nama Karyawan</label>
-                <input type="text" class="form-control" name="kry_name" placeholder="Masukkan Nama Karyawan" value="{{ $karyawan->kry_name }}" required>
+                <input type="text" class="form-control @error('kry_name') is-invalid @enderror" name="kry_name" placeholder="Masukkan Nama Karyawan" value="{{ $karyawan->kry_name }}" required>
+                @error('kry_name')
+                    <div class="text-danger position-absolute" style="top: 0; right: 0;">*{{ $message }}</div>
+                @enderror
             </div>
 
             <!-- Jabatan Karyawan -->
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="jabatan" class="form-label">Jabatan</label>
                 <select name="jbt_id" class="form-control" required>
                     <option value="">-- Pilih Jabatan --</option>
@@ -43,29 +35,22 @@
             </div>
 
             <!-- Username -->
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" name="kry_username" placeholder="Masukkan Username" value="{{ $karyawan->kry_username }}" required>
+                <input type="text" class="form-control @error('kry_username') is-invalid @enderror" name="kry_username" placeholder="Masukkan Username" value="{{ $karyawan->kry_username }}" required>
+                @error('kry_username')
+                    <div class="text-danger position-absolute" style="top: 0; right: 0;">*{{ $message }}</div>
+                @enderror
             </div>
 
             <!-- Email -->
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="kry_email" placeholder="Masukkan Email" value="{{ $karyawan->kry_email }}" required>
+                <input type="email" class="form-control @error('kry_email') is-invalid @enderror" name="kry_email" placeholder="Masukkan Email" value="{{ $karyawan->kry_email }}" required>
+                @error('kry_email')
+                    <div class="text-danger position-absolute" style="top: 0; right: 0;">*{{ $message }}</div>
+                @enderror
             </div>
-
-            <!-- Check if Email Changed -->
-            @if($karyawan->kry_email !== old('kry_email'))
-                <div class="mb-3">
-                    <label for="send_password" class="form-label">Kirim Password ke Email Baru</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="send_password" id="send_password">
-                        <label class="form-check-label" for="send_password">
-                            Centang untuk mengirim password ke email baru
-                        </label>
-                    </div>
-                </div>
-            @endif
 
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Simpan Data Karyawan

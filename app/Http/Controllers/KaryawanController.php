@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 
 class KaryawanController extends Controller
 {
@@ -91,13 +92,13 @@ class KaryawanController extends Controller
             'kry_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/|unique:dpo_mskaryawan,kry_name', // Nama hanya boleh huruf dan spasi, harus unik di tabel karyawan
             'jbt_id' => 'required', // ID jabatan harus diisi
             'kry_username' => 'required|unique:dpo_mskaryawan,kry_username', // Username harus diisi dan unik
-            'kry_email' => 'required|email|unique:dpo_mskaryawan,kry_email' // Email harus valid dan unik
+            'kry_email' => 'required|email|unique:dpo_mskaryawan,kry_email|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/' // Email harus valid dan unik
         ], [
             'kry_name.regex' => 'Nama karyawan hanya bisa diisi huruf dan spasi.', // Pesan error jika nama tidak sesuai format
             'kry_name.unique' => 'Karyawan telah terdaftar', // Pesan error jika nama sudah ada di database
             'kry_username.unique' => 'Username tidak tersedia.', // Pesan error jika username sudah ada
             'kry_email.unique' => 'Email sudah terdaftar.', // Pesan error jika email sudah ada
-            'kry_email.email' => 'Format email tidak valid.' // Pesan error jika format email salah
+            'kry_email.regex' => 'Format email tidak valid.' // Pesan error jika format email salah
         ]);
 
         // Mengambil data karyawan terakhir berdasarkan ID alternatif, diurutkan secara menurun
@@ -147,6 +148,7 @@ class KaryawanController extends Controller
     }
 
 
+
     /**
      * Display the specified resource.
      */
@@ -186,8 +188,60 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Cari data karyawan berdasarkan alternative ID
+        $karyawan = Karyawan::where('kry_id_alternative', $id)->firstOrFail();
+
+        // Simpan email lama untuk perbandingan
+        $oldEmail = $karyawan->kry_email;
+
+        // Validasi input dari pengguna dengan aturan yang lebih ketat.
+        $request->validate([
+            'kry_name' => [
+                'required', // Field 'kry_name' harus diisi.
+                'string', // Harus berupa string.
+                'max:255', // Maksimal panjang 255 karakter.
+                'regex:/^[a-zA-Z\s]+$/', // Hanya boleh mengandung huruf dan spasi.
+                Rule::unique('dpo_mskaryawan', 'kry_name')->ignore($karyawan->kry_id_alternative, 'kry_id_alternative'),
+            ],
+            'jbt_id' => 'required', // Field 'jbt_id' harus diisi (jabatan karyawan).
+            'kry_username' => [
+                'required', // Field 'kry_username' harus diisi.
+                Rule::unique('dpo_mskaryawan', 'kry_username')->ignore($karyawan->kry_id_alternative, 'kry_id_alternative'),
+            ],
+            'kry_email' => [
+                'required', // Field 'kry_email' harus diisi.
+                'email', // Harus berupa format email yang valid.
+                Rule::unique('dpo_mskaryawan', 'kry_email')->ignore($karyawan->kry_id_alternative, 'kry_id_alternative'),
+            ],
+        ], [
+            'kry_name.regex' => 'Nama karyawan hanya bisa diisi huruf dan spasi.',
+            'kry_name.unique' => 'Karyawan telah terdaftar.',
+            'kry_username.unique' => 'Username tidak tersedia.',
+            'kry_email.unique' => 'Email sudah terdaftar.',
+            'kry_email.email' => 'Format email tidak valid.',
+        ]);
+
+        // Perbarui atribut karyawan dengan data dari input pengguna.
+        $karyawan->kry_name = $request->input('kry_name');
+        $karyawan->jbt_id = $request->input('jbt_id');
+        $karyawan->kry_username = $request->input('kry_username');
+        $karyawan->kry_email = $request->input('kry_email');
+        $karyawan->kry_modified_by = 'mike';
+
+        // Simpan perubahan data ke database.
+        $karyawan->save();
+
+        // Cek apakah email telah diubah
+        if ($oldEmail !== $karyawan->kry_email) {
+            // Lakukan sesuatu jika email berubah, misalnya kirim notifikasi
+            // Contoh: Kirim email notifikasi tentang perubahan email
+            // Mail::to($karyawan->kry_email)->send(new EmailChangedNotification($karyawan));
+        }
+
+        // Redirect pengguna ke halaman daftar karyawan.
+        return redirect()->route('karyawan.index')->with('success', 'Data berhasil diubah!');
     }
+
 
     /**
      * Remove the specified resource from storage.
