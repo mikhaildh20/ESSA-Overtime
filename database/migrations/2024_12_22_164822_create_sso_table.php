@@ -12,13 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dpo_sso', function (Blueprint $table) {
+            $table->id('sso_id');  // Auto-incrementing primary key
             $table->unsignedBigInteger('kry_id');
-            $table->Integer('level');
-            $table->primary(['kry_id', 'level']);
+            $table->integer('sso_level');
+            $table->integer('sso_status');
+            $table->string('sso_created_by');
+            $table->string('sso_modified_by');
             $table->timestamps();
-        
-            $table->foreign('kry_id')->references('kry_id')->on('dpo_mskaryawan')->onDelete('restrict');
-        });    
+            
+            // Add a unique constraint on the composite key
+            $table->unique(['kry_id', 'sso_level']);
+            
+            // Add the 'deleted_at' column for soft deletes
+            $table->softDeletes();
+            
+            // Foreign key constraint
+            $table->foreign('kry_id')
+                  ->references('kry_id')
+                  ->on('dpo_mskaryawan')
+                  ->onDelete('restrict');
+        });        
     }
 
     /**

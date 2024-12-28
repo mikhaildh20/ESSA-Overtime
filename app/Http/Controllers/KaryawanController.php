@@ -22,44 +22,45 @@ class KaryawanController extends Controller
      */
     public function index(Request $request)
     {
-        // Validate inputs
+        // Validasi input dari request
         $validated = $request->validate([
-            'search' => 'nullable|string|max:255',
-            'sort' => 'nullable|in:asc,desc',
+            'search' => 'nullable|string|max:255', // 'search' bisa kosong, harus string, maksimal 255 karakter
+            'sort' => 'nullable|in:asc,desc', // 'sort' hanya boleh bernilai 'asc' atau 'desc'
         ]);
 
-        $search = $validated['search'] ?? null;
-        $sort = $validated['sort'] ?? 'asc';
+        // Ambil nilai 'search' dan 'sort' dengan sanitasi
+        $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Sanitasi input 'search' untuk mencegah XSS
+        $sort = $validated['sort'] ?? 'asc'; // Default nilai 'sort' adalah 'asc'
 
-        // Ambil data dari database berdasarkan input pencarian dan sorting, termasuk relasi 'jabatan' (dpo_msjabatan)
-        $data = Karyawan::with('dpo_msjabatan') // Melakukan eager loading pada relasi 'dpo_msjabatan' untuk mengambil data jabatan
-            ->when($search, function($query, $search) { // Jika ada input pencarian, tambahkan kondisi pencarian
-                return $query->where('kry_name', 'like', '%'.$search.'%'); // Pencarian berdasarkan nama karyawan (kry_name)
+        // Ambil data karyawan dengan relasi 'jabatan', dan tambahkan kondisi pencarian serta sorting
+        $data = Karyawan::with('dpo_msjabatan') // Eager loading untuk relasi 'dpo_msjabatan'
+            ->when($search, function ($query, $search) { // Tambahkan kondisi pencarian jika input 'search' ada
+                return $query->where('kry_name', 'like', '%' . $search . '%'); // Filter data berdasarkan nama karyawan
             })
-            ->orderBy('kry_name', $sort) // Urutkan berdasarkan nama karyawan (kry_name), sesuai dengan arah sorting ('asc' atau 'desc')
-            ->paginate(10); // Batasi hasil pencarian dan sorting dengan paginasi, 10 data per halaman
+            ->orderBy(Karyawan::sanitizeColumn('kry_name'), $sort) // Urutkan berdasarkan kolom yang disanitasi
+            ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
 
-        // Konversi data hasil query menjadi bentuk Data Transfer Object (DTO) untuk keperluan tampilan
+        // Konversi data hasil query menjadi DTO (Data Transfer Object)
         $dto = $data->map(function ($karyawan) {
-            // Setiap elemen data (karyawan) dikonversi menjadi objek KaryawanDto
             return new KaryawanDto(
-                $karyawan->kry_id_alternative, // ID alternatif karyawan
-                $karyawan->kry_name, // Nama karyawan
-                $karyawan->dpo_msjabatan->jbt_name, // Nama jabatan diambil dari relasi 'dpo_msjabatan'
-                $karyawan->kry_username, // Username karyawan
-                $karyawan->kry_email, // Email karyawan
-                $karyawan->kry_status // Status karyawan
+                htmlspecialchars($karyawan->kry_id_alternative, ENT_QUOTES, 'UTF-8'), // ID alternatif karyawan yang disanitasi
+                htmlspecialchars($karyawan->kry_name ?? '', ENT_QUOTES, 'UTF-8'), // Nama karyawan yang disanitasi
+                htmlspecialchars($karyawan->dpo_msjabatan->jbt_name ?? '', ENT_QUOTES, 'UTF-8'), // Nama jabatan yang disanitasi
+                htmlspecialchars($karyawan->kry_username ?? '', ENT_QUOTES, 'UTF-8'), // Username karyawan yang disanitasi
+                htmlspecialchars($karyawan->kry_email ?? '', ENT_QUOTES, 'UTF-8'), // Email karyawan yang disanitasi
+                htmlspecialchars($karyawan->kry_status ?? '', ENT_QUOTES, 'UTF-8') // Status karyawan yang disanitasi
             );
         });
 
-        // Kirim data ke view 'layouts.pages.master.karyawan.index' untuk ditampilkan
+        // Kembalikan data ke view untuk ditampilkan
         return view('layouts.pages.master.karyawan.index', [
-            'dto' => $dto, // Kirim data karyawan yang sudah dikonversi ke DTO ke view
-            'pagination' => $data, // Kirim objek pagination untuk digunakan di view sebagai kontrol navigasi halaman
-            'search' => $search, // Kirim nilai input pencarian untuk dipertahankan di tampilan
-            'sort' => $sort, // Kirim status sorting (asc/desc) untuk dipertahankan di tampilan
+            'dto' => $dto, // Data yang sudah dikonversi ke DTO untuk kebutuhan tampilan
+            'pagination' => $data, // Data pagination untuk kontrol navigasi halaman
+            'search' => $search, // Nilai input pencarian untuk dipertahankan di tampilan
+            'sort' => $sort, // Status sorting (asc/desc) untuk dipertahankan di tampilan
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -102,41 +103,41 @@ class KaryawanController extends Controller
             'kry_email.regex' => 'Format email tidak valid.' // Pesan error jika format email salah
         ]);
 
-        // Mengambil data karyawan terakhir berdasarkan ID alternatif, diurutkan secara menurun
-        $latestKaryawan = Karyawan::orderBy('kry_id_alternative', 'desc')->first();
-
-        // Membuat ID baru berdasarkan ID karyawan terakhir
-        if ($latestKaryawan) {
-            // Mengambil angka dari ID yang terakhir dan menambahkannya
-            $latestId = (int) substr($latestKaryawan->kry_id_alternative, 4);
-            $newId = 'KRY-' . str_pad($latestId + 1, 3, '0', STR_PAD_LEFT); // ID baru dengan format KRY-001, KRY-002, dst.
-        } else {
-            // Jika belum ada data, mulai dengan ID pertama
-            $newId = 'KRY-001';
-        }
-
-        // Membuat password acak yang kuat dengan kombinasi huruf, angka, dan simbol
-        $randomPassword = Str::random(8) . rand(1000, 9999) . '!@#'; // Password terdiri dari 8 karakter acak, angka acak 4 digit, dan simbol
-
-        // Hash password menggunakan bcrypt
-        $hashedPassword = Hash::make($randomPassword);
-
-        // Membuat instance baru dari model Karyawan dan mengisi atributnya
-        $karyawan = new Karyawan();
-        $karyawan->kry_id_alternative = $newId; // Menetapkan ID alternatif baru
-        $karyawan->kry_name = $request->input('kry_name'); // Nama karyawan dari input request
-        $karyawan->jbt_id = $request->input('jbt_id'); // ID jabatan dari input request
-        $karyawan->kry_password = $hashedPassword; // Password yang telah di-hash
-        $karyawan->kry_username = $request->input('kry_username'); // Username dari input request
-        $karyawan->kry_email = $request->input('kry_email'); // Email dari input request
-        $karyawan->kry_status = 1; // Status karyawan aktif (1)
-        $karyawan->kry_created_by = 'mike'; // Pengguna yang membuat data (misalnya 'mike')
-        $karyawan->kry_modified_by = 'mike'; // Pengguna yang terakhir mengubah data (misalnya 'mike')
-
-        // Menyimpan data karyawan baru ke dalam database
-        $karyawan->save();
-
         try{
+            // Mengambil data karyawan terakhir berdasarkan ID alternatif, diurutkan secara menurun
+            $latestKaryawan = Karyawan::orderBy('kry_id_alternative', 'desc')->first();
+
+            // Membuat ID baru berdasarkan ID karyawan terakhir
+            if ($latestKaryawan) {
+                // Mengambil angka dari ID yang terakhir dan menambahkannya
+                $latestId = (int) substr($latestKaryawan->kry_id_alternative, 4);
+                $newId = 'KRY-' . str_pad($latestId + 1, 3, '0', STR_PAD_LEFT); // ID baru dengan format KRY-001, KRY-002, dst.
+            } else {
+                // Jika belum ada data, mulai dengan ID pertama
+                $newId = 'KRY-001';
+            }
+
+            // Membuat password acak yang kuat dengan kombinasi huruf, angka, dan simbol
+            $randomPassword = Str::random(8) . rand(1000, 9999) . '!@#'; // Password terdiri dari 8 karakter acak, angka acak 4 digit, dan simbol
+
+            // Hash password menggunakan bcrypt
+            $hashedPassword = Hash::make($randomPassword);
+
+            // Membuat instance baru dari model Karyawan dan mengisi atributnya
+            $karyawan = new Karyawan();
+            $karyawan->kry_id_alternative = $newId; // Menetapkan ID alternatif baru
+            $karyawan->kry_name = $request->input('kry_name'); // Nama karyawan dari input request
+            $karyawan->jbt_id = $request->input('jbt_id'); // ID jabatan dari input request
+            $karyawan->kry_password = $hashedPassword; // Password yang telah di-hash
+            $karyawan->kry_username = $request->input('kry_username'); // Username dari input request
+            $karyawan->kry_email = $request->input('kry_email'); // Email dari input request
+            $karyawan->kry_status = 1; // Status karyawan aktif (1)
+            $karyawan->kry_created_by = 'mike'; // Pengguna yang membuat data (misalnya 'mike')
+            $karyawan->kry_modified_by = 'mike'; // Pengguna yang terakhir mengubah data (misalnya 'mike')
+
+            // Menyimpan data karyawan baru ke dalam database
+            $karyawan->save();
+
             // Mengirim email kepada karyawan yang baru dibuat, berisi username dan password sementara
             Mail::to($karyawan->kry_email)->send(new SendEmail(
                 $karyawan->kry_created_by, 

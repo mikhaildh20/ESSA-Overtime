@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('kry_modified_by');
             $table->timestamps();
 
+            // Add a unique constraint on the composite key
+            $table->unique('kry_id_alternative');
+
             $table->foreign('jbt_id')->references('jbt_id')->on('dpo_msjabatan')->onDelete('restrict');
         });
     }

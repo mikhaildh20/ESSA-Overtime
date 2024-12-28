@@ -13,36 +13,40 @@ class JabatanController extends Controller
      */
     public function index(Request $request)
     {
-        // Validate inputs
+        // Validasi input dari request
         $validated = $request->validate([
-            'search' => 'nullable|string|max:255',
-            'sort' => 'nullable|in:asc,desc',
+            'search' => 'nullable|string|max:255', // 'search' bisa kosong, harus string, maksimal 255 karakter
+            'sort' => 'nullable|in:asc,desc', // 'sort' hanya boleh bernilai 'asc' atau 'desc'
         ]);
 
-        $search = $validated['search'] ?? null;
-        $sort = $validated['sort'] ?? 'asc';
+        // Sanitasi input untuk mencegah XSS
+        $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Jika tidak ada 'search', set null
+        $sort = $validated['sort'] ?? 'asc'; // Jika tidak ada 'sort', gunakan nilai default 'asc'
 
-        // Fetch data with search and sorting
-        $data = Jabatan::when($search, function($query, $search) {
-                        return $query->where('jbt_name', 'like', '%'.$search.'%');
-                    })
-                    ->orderBy('jbt_name', $sort)
-                    ->paginate(10);
+        // Ambil data 'jabatan' dengan kondisi pencarian dan sorting
+        $data = Jabatan::when($search, function ($query, $search) { // Jika ada input 'search'
+                return $query->where('jbt_name', 'like', '%' . $search . '%'); // Filter berdasarkan nama jabatan
+            })
+            ->orderBy(Jabatan::sanitizeColumn('jbt_name'), $sort) // Urutkan berdasarkan kolom yang disanitasi
+            ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
 
-        // Convert to DTOs
+        // Konversi data hasil query menjadi DTO (Data Transfer Object)
         $dto = $data->map(function ($jabatan) {
-            return new JabatanDto($jabatan->jbt_id, $jabatan->jbt_name, $jabatan->jbt_status);
+            return new JabatanDto(
+                htmlspecialchars($jabatan->jbt_id, ENT_QUOTES, 'UTF-8'), // Sanitasi ID jabatan
+                htmlspecialchars($jabatan->jbt_name ?? '', ENT_QUOTES, 'UTF-8'), // Sanitasi nama jabatan
+                htmlspecialchars($jabatan->jbt_status ?? '', ENT_QUOTES, 'UTF-8') // Sanitasi status jabatan
+            );
         });
 
-        // Return view with data
+        // Kembalikan data ke view untuk ditampilkan
         return view('layouts.pages.master.jabatan.index', [
-            'dto' => $dto,
-            'pagination' => $data,
-            'search' => $search,
-            'sort' => $sort,
+            'dto' => $dto, // Data yang sudah dikonversi ke DTO
+            'pagination' => $data, // Data pagination untuk kontrol navigasi halaman
+            'search' => $search, // Nilai input pencarian untuk dipertahankan di tampilan
+            'sort' => $sort, // Status sorting (asc/desc) untuk dipertahankan di tampilan
         ]);
     }
-
 
 
     /**
@@ -66,13 +70,18 @@ class JabatanController extends Controller
             'jbt_name.unique' => 'Data sudah ada.'
         ]);
 
-        // Membuat instance Jabatan baru
-        $jabatan = new Jabatan();
-        $jabatan->jbt_name = $request->input('jbt_name');
-        $jabatan->jbt_status = 1;
+        try{
+            // Membuat instance Jabatan baru
+            $jabatan = new Jabatan();
+            $jabatan->jbt_name = $request->input('jbt_name');
+            $jabatan->jbt_status = 1;
 
-        // Menyimpan data jabatan baru
-        $jabatan->save();
+            // Menyimpan data jabatan baru
+            $jabatan->save();
+        }catch(\Exception $e){
+            return redirect()->route('jabatan.create')->with('error','Terjadi kesalahan, hubungi Tim IT!');
+        }
+        
 
         // Kembali dengan pesan sukses
         return redirect()->route('jabatan.index')->with('success', 'Data berhasil ditambah!');
