@@ -69,7 +69,7 @@
 
                         <!-- Modal Trigger untuk Hapus atau Aktif -->
                         <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
-                                    data-action="{{ route('sso.destroy', $d->sso_id) }}" >
+                                    data-action="{{ route('sso.update_status', $d->sso_id) }}" >
                                 <i class="fas fa-trash-alt"></i> Hapus
                         </button>
                     </td>
@@ -102,7 +102,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <form id="confirmForm" action="" method="POST">
                         @csrf
-                        @method('DELETE')
+                        @method('PUT')
                         <button type="submit" class="btn btn-danger" id="confirmButton">Ya, Lanjutkan</button>
                     </form>
                 </div>

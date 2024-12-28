@@ -28,6 +28,7 @@ class SsoController extends Controller
 
         // Ambil data SSO dengan relasi ke tabel karyawan dan jabatan menggunakan Eloquent
         $data = Sso::with(['dpo_mskaryawan.dpo_msjabatan']) // Ambil relasi 'dpo_mskaryawan' dan 'dpo_msjabatan'
+            ->where('sso_status',1) // Filter berdasarkan sso_status
             ->when($search, function ($query, $search) { // Jika ada input 'search'
                 return $query->whereHas('dpo_mskaryawan', function ($query) use ($search) { // Filter berdasarkan nama karyawan
                     $query->where('kry_name', 'like', '%' . $search . '%'); // Nama karyawan mengandung input 'search'
@@ -187,8 +188,26 @@ class SsoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        
     }
+
+    public function update_status(string $id)
+    {
+         // Cari karyawan berdasarkan Alternative ID
+        $sso = Sso::findOrFail($id);
+
+        // Menentukan status dan pesan berdasarkan status karyawan saat ini
+        $status = $sso->sso_status == 1 ? 0 : 1;
+        $message = $status == 1 ? "Data diaktifkan!" : "Data dihapus!";
+
+        // Menyimpan perubahan status
+        $sso->sso_status = $status;
+        $sso->save();
+
+        // Mengalihkan dan memberikan pesan status yang sesuai
+        return redirect()->route('sso.index')->with('success', $message);
+    }
+
 }
