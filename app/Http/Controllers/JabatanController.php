@@ -13,35 +13,36 @@ class JabatanController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil input pencarian dan sorting
-        $search = $request->input('search'); 
-        $sort = $request->input('sort', 'asc'); // Default sorting to 'asc'
+        // Validate inputs
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+            'sort' => 'nullable|in:asc,desc',
+        ]);
 
-        // Validasi apakah 'sort' input valid (asc atau desc)
-        if (!in_array($sort, ['asc', 'desc'])) {
-            $sort = 'asc'; // Default ke 'asc' jika invalid
-        }
+        $search = $validated['search'] ?? null;
+        $sort = $validated['sort'] ?? 'asc';
 
-        // Ambil data dari database dengan pencarian dan sorting
+        // Fetch data with search and sorting
         $data = Jabatan::when($search, function($query, $search) {
-                    return $query->where('jbt_name', 'like', '%'.$search.'%');
-                })
-                ->orderBy('jbt_name', $sort) // Urutkan berdasarkan 'jbt_name' sesuai arah sorting
-                ->paginate(10); // Batasi jumlah data per halaman
+                        return $query->where('jbt_name', 'like', '%'.$search.'%');
+                    })
+                    ->orderBy('jbt_name', $sort)
+                    ->paginate(10);
 
-        // Konversi data dari table ke bentuk Data Transfer Object (DTO)
+        // Convert to DTOs
         $dto = $data->map(function ($jabatan) {
             return new JabatanDto($jabatan->jbt_id, $jabatan->jbt_name, $jabatan->jbt_status);
         });
 
-        // Kirim data ke view
+        // Return view with data
         return view('layouts.pages.master.jabatan.index', [
             'dto' => $dto,
-            'pagination' => $data, // Tetap kirim objek pagination untuk navigasi
-            'search' => $search, // Kirim input pencarian ke view
-            'sort' => $sort, // Kirim status sorting ke view
+            'pagination' => $data,
+            'search' => $search,
+            'sort' => $sort,
         ]);
     }
+
 
 
     /**

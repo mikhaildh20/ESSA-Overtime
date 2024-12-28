@@ -22,15 +22,14 @@ class KaryawanController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil input pencarian dan sorting dari permintaan pengguna
-        $search = $request->input('search'); // Mengambil parameter pencarian (search) dari URL atau form input
-        $sort = $request->input('sort', 'asc'); // Mengambil parameter sorting (sort) dari URL atau form input, defaultnya adalah 'asc' (ascending)
+        // Validate inputs
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+            'sort' => 'nullable|in:asc,desc',
+        ]);
 
-        // Validasi apakah input 'sort' valid (hanya bisa 'asc' atau 'desc')
-        // Jika input 'sort' bukan salah satu dari 'asc' atau 'desc', maka set 'sort' ke 'asc'
-        if (!in_array($sort, ['asc', 'desc'])) {
-            $sort = 'asc'; // Set default 'asc' jika input tidak valid
-        }
+        $search = $validated['search'] ?? null;
+        $sort = $validated['sort'] ?? 'asc';
 
         // Ambil data dari database berdasarkan input pencarian dan sorting, termasuk relasi 'jabatan' (dpo_msjabatan)
         $data = Karyawan::with('dpo_msjabatan') // Melakukan eager loading pada relasi 'dpo_msjabatan' untuk mengambil data jabatan
