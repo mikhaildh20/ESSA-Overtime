@@ -26,7 +26,7 @@
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('karyawan.index') }}" method="GET">
-                <input type="text" id="searchInput" class="form-control" placeholder="Cari Data Karyawan..." name="search" value="{{ request()->input('search') }}">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Karyawan..." name="search" value="{{ request()->input('search') }}">
             </form>
         </div>
 

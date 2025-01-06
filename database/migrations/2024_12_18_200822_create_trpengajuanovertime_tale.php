@@ -13,16 +13,22 @@ return new class extends Migration
     {
         Schema::create('dpo_trpengajuanovertime', function (Blueprint $table) {
             $table->id('pjn_id');
-            $table->string('pjn_type');
-            $table->string('pjn_description');
+            $table->string('pjn_id_alternative');
+            $table->unsignedBigInteger('jen_id');
+            $table->string('pjn_deskripsi');
             $table->string('pjn_excel_proof');
             $table->string('pjn_pdf_proof');
-            $table->string('pjn_review_notes');
+            $table->string('pjn_catatan');
             $table->string('pjn_status');
-            $table->string('pjn_created_by');
-            $table->string('pjn_modified_by');
-            $table->unsignedBigInteger('pjn_kry_id');
-            $table->timestamps();
+            $table->unsignedBigInteger('kry_id');
+            $table->timestamp('pjn_created_date')->useCurrent();
+            $table->timestamp('pjn_modified_date')->useCurrent();
+
+            // Add a unique constraint on the composite key
+            $table->unique('pjn_id_alternative');
+
+            $table->foreign('kry_id')->references('kry_id')->on('dpo_mskaryawan')->onDelete('restrict');
+            $table->foreign('jen_id')->references('jen_id')->on('dpo_msjenispengajuan')->onDelete('restrict');
         });
     }
 
@@ -31,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('trpengajuanovertime_tale');
+        Schema::dropIfExists('dpo_trpengajuanovertime');
     }
 };

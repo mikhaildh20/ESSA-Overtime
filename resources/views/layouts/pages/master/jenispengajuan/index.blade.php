@@ -9,11 +9,11 @@
 
     <!-- Container -->
     <div class="container my-5">
-        <h1 class="mb-4">Data Single Sign-On</h1>
+        <h1 class="mb-4">Data Jenis Pengajuan</h1>
 
         <!-- Create Button -->
-        <a href="{{ route('sso.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Data
+        <a href="{{ route('jenis.create') }}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus"></i> Tambah Jenis Pengajuan
         </a>
 
         @if(session('success'))
@@ -24,19 +24,19 @@
 
         <!-- Search and Filter -->
         <div class="search-container">
-            <form action="{{ route('sso.index') }}" method="GET">
-                <input type="text" id="searchInput" class="form-control" placeholder="Cari Data SSO..." name="search" value="{{ request()->input('search') }}">
+            <form action="{{ route('jenis.index') }}" method="GET">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Jenis Pengajuan..." name="search" value="{{ request()->input('search') }}">
             </form>
         </div>
 
         <!-- Table -->
-        <table class="table table-bordered table-striped" id="jabatanTable">
+        <table class="table table-bordered table-striped" id="jenisTable">
             <thead>
                 <tr>
                     <th>No.</th>
                     <th>
-                        <a href="{{ route('sso.index', ['sort' => $sort == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" style="text-decoration: none; color: black;">
-                            Nama Karyawan
+                        <a href="{{ route('jenis.index', ['sort' => $sort == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" style="text-decoration: none; color: black;">
+                            Nama Jenis Pengajuan
                             @if($sort == 'asc')
                                 <i class="fas fa-sort-alpha-down"></i>
                             @else
@@ -44,8 +44,7 @@
                             @endif
                         </a>
                     </th>
-                    <th>Jabatan</th>
-                    <th>Level Akses</th>
+                    <th>Deskripsi</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -53,30 +52,33 @@
                 @forelse($dto as $d)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $d->kry_name }}</td>
-                    <td>{{ $d->jbt_name }}</td>
-                    @if($d->sso_level == 1)
-                        <td>Karyawan</td>
-                    @elseif($d->sso_level == 2)
-                        <td>Human Resources</td>
-                    @else
-                        <td>Administrator</td>
-                    @endif
+                    <td>{{ $d->jen_nama }}</td>
+                    <td>{{ $d->jen_deskripsi }}</td>
                     <td>
-                        <a href="{{ route('sso.edit', $d->sso_id) }}" class="btn btn-warning btn-sm">
+                        <a href="{{ route('jenis.edit', $d->jen_id) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Ubah
                         </a>
 
                         <!-- Modal Trigger untuk Hapus atau Aktif -->
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
-                                    data-action="{{ route('sso.update_status', $d->sso_id) }}" >
-                                <i class="fas fa-trash-alt"></i> Hapus
-                        </button>
+                        @if($d->jen_status == 'Aktif')
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                data-action="{{ route('jenis.update_status', $d->jen_id) }}" 
+                                data-status="inactive" data-id="{{ $d->jen_id }}">
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
+                        @else
+                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                data-action="{{ route('jenis.update_status', $d->jen_id) }}" 
+                                data-status="active" data-id="{{ $d->jen_id }}">
+                                    <i class="fas fa-check-circle"></i> Aktif
+                            </button>
+                        @endif
+
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center">Belum ada data.</td>
+                    <td colspan="4" class="text-center">Belum ada data.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -85,18 +87,18 @@
         <div class="mt-4">
             {{ $pagination->links('vendor.pagination.bootstrap-5') }}
         </div>
-
+    </div>
 
     <!-- Modal Konfirmasi -->
     <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Hapus</h5>
+                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Aksi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalMessage">Apakah Anda yakin ingin menghapus data ini?</p>
+                    <p id="modalMessage">Apakah Anda yakin ingin melakukan aksi ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -118,10 +120,24 @@
         modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget; // Tombol yang di klik
             const actionUrl = button.getAttribute('data-action'); // Ambil URL aksi
+            const status = button.getAttribute('data-status'); // Ambil status
+            const id = button.getAttribute('data-id'); // Ambil ID
 
             // Update form action dan message sesuai dengan status
             const form = document.getElementById('confirmForm');
             form.action = actionUrl;
+
+            const message = document.getElementById('modalMessage');
+            if (status === 'active') {
+                message.textContent = 'Apakah Anda yakin ingin mengaktifkan jenis pengajuan ini?';
+            } else {
+                message.textContent = 'Apakah Anda yakin ingin menonaktifkan jenis pengajuan ini?';
+            }
+
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.classList.toggle('btn-danger', status === 'inactive');
+            confirmButton.classList.toggle('btn-success', status === 'active');
         });
     </script>
+
 @endsection

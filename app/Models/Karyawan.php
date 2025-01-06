@@ -34,6 +34,14 @@ class Karyawan extends Model
     }
 
     /**
+     * Relasi ke model Pengajuan
+     */
+    public function dpo_trpengajuanovertime()
+    {
+        return $this->hasMany(Pengajuan::class, 'kry_id', 'kry_id');
+    }
+
+    /**
      * Relasi ke model Sso
      */
     public function dpo_sso()

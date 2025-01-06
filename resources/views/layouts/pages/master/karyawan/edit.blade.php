@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="container my-5">
-        <h1 class="mb-4">Tambah Data Karyawan</h1>
+        <h1 class="mb-4">Ubah Data Karyawan</h1>
 
         <!-- Back Button -->
         <a href="{{ route('karyawan.index') }}" class="btn btn-secondary mb-3">
@@ -59,7 +59,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> Simpan Data Karyawan
+                <i class="fas fa-save"></i> Ubah Karyawan
             </button>
         </form>
     </div>
