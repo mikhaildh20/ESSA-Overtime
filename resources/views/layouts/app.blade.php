@@ -119,7 +119,7 @@
                     <a class="nav-link" href="{{ route('sso.index') }}">SSO</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Lembur</a>
+                    <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Notifikasi <span class="notification">45686</span></a>

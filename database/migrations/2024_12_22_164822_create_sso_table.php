@@ -23,9 +23,6 @@ return new class extends Migration
             // Add a unique constraint on the composite key
             $table->unique(['kry_id', 'sso_level']);
             
-            // Add the 'deleted_at' column for soft deletes
-            $table->softDeletes();
-            
             // Foreign key constraint
             $table->foreign('kry_id')
                   ->references('kry_id')

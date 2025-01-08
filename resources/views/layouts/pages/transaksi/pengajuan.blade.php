@@ -1,164 +1,116 @@
-@extends('layouts.app')
+@extends ('layouts.app')
 
 @section('content')
-    <div class="card">
-            <div class="card-header">
-                <h4>Pengajuan Lembur</h4>
+    <style>
+        .search-container {
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <!-- Container -->
+    <div class="container my-5">
+        <h1 class="mb-4">Draft Pengajuan Lembur</h1>
+
+        <!-- Create Button -->
+        <a href="{{ route('pengajuan.create') }}" class="btn btn-primary mb-3">
+            <i class="fas fa-plus"></i> Tambah Pengajuan
+        </a>
+
+        @if(session('success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('success') }}
             </div>
-            <div class="card-body">
-                <button class="btn btn-primary mb-3">+ Tambah Baru</button>
-                <div class="input-group mb-3">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Pencarian">
-                    <button class="btn btn-primary" type="button" id="filterButton">
-                        <i class="fas fa-filter"></i> Filter
-                    </button>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr class="text-center">
-                            <th>No</th>
-                            <th>NIDN</th>
-                            <th>Nama</th>
-                            <th>Jenis Pengajuan</th>
-                            <th>Tanggal Pengajuan</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Table rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
-                <nav>
-                    <ul class="pagination justify-content-start" id="pagination">
-                        <!-- Pagination buttons will be populated by JavaScript -->
-                    </ul>
-                </nav>
-            </div>
+        @endif
+
+        <!-- Search and Filter -->
+        <div class="search-container">
+            <form action="{{ route('pengajuan.index') }}" method="GET">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari Data..." name="search" value="{{ request()->input('search') }}">
+            </form>
         </div>
 
-        <script>
-        const data = [
-            { no: 1, nidn: "0987654321", nama: "YUNIARTO FIRMANSYAH RINALDI", jenis: "Pengajaran", tanggal: "09 September 2024", status: "Draft" },
-            { no: 2, nidn: "0987654321", nama: "YUNIARTO FIRMANSYAH RINALDI", jenis: "Operasional", tanggal: "09 September 2024", status: "Diajukan" },
-            { no: 3, nidn: "0987654321", nama: "YUNIARTO FIRMANSYAH RINALDI", jenis: "Kepanitiaan", tanggal: "09 September 2024", status: "Disetujui" },
-            { no: 4, nidn: "0987654321", nama: "YUNIARTO FIRMANSYAH RINALDI", jenis: "Produksi", tanggal: "09 September 2024", status: "Ditolak " },
-            { no: 5, nidn: "0987654321", nama: "YUNIARTO FIRMANSYAH RINALDI", jenis: "Akademik ", tanggal: "09 September 2024", status: "Disetujui" }
-            // Add more rows if needed
-        ];
-
-        const rowsPerPage = 8;
-        let currentPage = 1;
-        let filteredData = data;
-
-        function displayTable() {
-            const startIndex = (currentPage -  1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            const paginatedData = filteredData.slice(startIndex, endIndex);
-
-            const tableBody = $("#tableBody");
-            tableBody.empty();
-
-            paginatedData.forEach(row => {
-                tableBody.append(`
-                    <tr class="text-center">
-                        <td>${row.no}</td>
-                        <td>${row.nidn}</td>
-                        <td>${row.nama}</td>
-                        <td>${row.jenis}</td>
-                        <td>${row.tanggal}</td>
-                        <td>${row.status}</td>
+        <!-- Table -->
+        <table class="table table-bordered table-striped" id="jabatanTable">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>NIDN</th>
+                    <th>Jenis Pengajuan</th>
+                    <th>Tanggal Pengajuan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @forelse($dto as $d)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $d->kry_name }}</td>
+                        <td>{{ $d->jbt_name }}</td>
+                        @if($d->sso_level == 1)
+                            <td>Karyawan</td>
+                        @elseif($d->sso_level == 2)
+                            <td>Human Resources</td>
+                        @else
+                            <td>Administrator</td>
+                        @endif
                         <td>
-                            <a href="#" class="me-2"><i class="fas fa-pencil-alt text-primary"></i></a>
-                            <a href="#" class="me-2"><i class="fas fa-trash text-primary"></i></a>
-                            <a href="#" class="me-2"><i class="fas fa-bars text-primary"></i></a>
-                            <a href="#"><i class="fas fa-paper-plane text-primary"></i></a>
+                            <a href="{{ route('sso.edit', $d->sso_id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Ubah
+                            </a>
+
+                            <!-- Modal Trigger untuk Hapus atau Aktif -->
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                        data-action="{{ route('sso.update_status', $d->sso_id) }}" >
+                                    <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
                         </td>
                     </tr>
-                `);
-            });
-        }
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Belum ada data.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
 
-        function setupPagination() {
-            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            const pagination = $("#pagination");
-            pagination.empty();
 
-            const maxPageButtons = 5; // Maximum number of page buttons to display
-            let startPage, endPage;
 
-            if (totalPages <= maxPageButtons) {
-                startPage = 1;
-                endPage = totalPages;
-            } else {
-                const halfMaxPageButtons = Math.floor(maxPageButtons / 2);
-                if (currentPage <= halfMaxPageButtons) {
-                    startPage = 1;
-                    endPage = maxPageButtons;
-                } else if (currentPage + halfMaxPageButtons >= totalPages) {
-                    startPage = totalPages - maxPageButtons + 1;
-                    endPage = totalPages;
-                } else {
-                    startPage = currentPage - halfMaxPageButtons;
-                    endPage = currentPage + halfMaxPageButtons;
-                }
-            }
+    <!-- Modal Konfirmasi -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage">Apakah Anda yakin ingin menghapus pengajuan ini?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <form id="confirmForm" action="" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="btn btn-danger" id="confirmButton">Ya, Lanjutkan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // Add Previous button
-            pagination.append(`
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link" href="#" id="prevPage">Prev</a>
-                </li>
-            `);
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tangkap event saat tombol di klik
+        const modal = document.getElementById('confirmModal');
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Tombol yang di klik
+            const actionUrl = button.getAttribute('data-action'); // Ambil URL aksi
 
-            // Add page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                pagination.append(`
-                    <li class="page-item ${i === currentPage ? "active" : ""}">
-                        <a class="page-link" href="#">${i}</a>
-                    </li>
-                `);
-            }
-
-            // Add Next button
-            pagination.append(`
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link" href="#" id="nextPage">Next</a>
-                </li>
-            `);
-
-            // Event handlers for page links
-            $(".page-link").on("click", function (e) {
-                e.preventDefault();
-                const pageNum = $(this).text();
-                if (pageNum === "Prev") {
-                    if (currentPage > 1) {
-                        currentPage--;
-                    }
-                } else if (pageNum === "Next") {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                    }
-                } else {
-                    currentPage = parseInt(pageNum);
-                }
-                displayTable();
-                setupPagination();
-            });
-        }
-
-        $("#applyFilter").on("click", function () {
-            const selectedJenis = $("#jenisFilter").val();
-            filteredData = selectedJenis ? data.filter(item => item.jenis === selectedJenis) : data;
-            currentPage = 1; // Reset to first page
-            displayTable();
-            setupPagination();
-        });
-
-        // Initialize table and pagination
-        $(document).ready(() => {
-            displayTable();
-            setupPagination();
+            // Update form action dan message sesuai dengan status
+            const form = document.getElementById('confirmForm');
+            form.action = actionUrl;
         });
     </script>
 @endsection

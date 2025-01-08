@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('dpo_trpengajuanovertime', function (Blueprint $table) {
             $table->id('pjn_id');
-            $table->string('pjn_type');
+            $table->unsignedBigInteger('pjn_type');
             $table->string('pjn_description');
             $table->string('pjn_excel_proof');
             $table->string('pjn_pdf_proof');
@@ -23,6 +23,12 @@ return new class extends Migration
             $table->string('pjn_modified_by');
             $table->unsignedBigInteger('pjn_kry_id');
             $table->timestamps();
+
+            // Foreign key constraint
+            $table->foreign('pjn_type')
+                  ->references('jpj_id')
+                  ->on('dpo_msjenispengajuan')
+                  ->onDelete('restrict');
         });
     }
 

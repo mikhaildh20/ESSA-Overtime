@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class PengajuanController extends Controller
+class JenisPengajuanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('layouts.pages.transaksi.pengajuan');
+        //
     }
 
     /**
