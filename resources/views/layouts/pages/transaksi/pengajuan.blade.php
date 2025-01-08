@@ -34,7 +34,7 @@
             <thead>
                 <tr>
                     <th>No.</th>
-                    <th>NIDN</th>
+                    <th>Karyawan</th>
                     <th>Jenis Pengajuan</th>
                     <th>Tanggal Pengajuan</th>
                     <th>Status</th>
