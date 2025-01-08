@@ -119,6 +119,9 @@
                     <a class="nav-link" href="{{ route('sso.index') }}">SSO</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#">Jenis Pengajuan</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
                 </li>
                 <li class="nav-item">

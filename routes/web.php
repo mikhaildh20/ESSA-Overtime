@@ -6,6 +6,7 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\SsoController;
 use App\Http\Controllers\PengajuanController;
+use App\Http\Controllers\JenisPengajuanController;
 
 
 Route::get('/', function(){
@@ -22,6 +23,8 @@ Route::resource('sso',SsoController::class);
 Route::put('/sso/{id}/update_status', [SsoController::class, 'update_status'])->name('sso.update_status');
 
 Route::resource('pengajuan',PengajuanController::class);
+
+Route::resource('jenis_pengajuan',JenisPengajuanController::class);
 
 // Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 // Route::post('/login', [AuthController::class, 'login']);
