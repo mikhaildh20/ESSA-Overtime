@@ -25,6 +25,7 @@ Route::put('/sso/{id}/update_status', [SsoController::class, 'update_status'])->
 Route::resource('pengajuan',PengajuanController::class);
 
 Route::resource('jenis_pengajuan',JenisPengajuanController::class);
+Route::put('/jenis_pengajuan/{id}/update_status', [JenisPengajuanController::class, 'update_status'])->name('jenis_pengajuan.update_status');
 
 // Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 // Route::post('/login', [AuthController::class, 'login']);

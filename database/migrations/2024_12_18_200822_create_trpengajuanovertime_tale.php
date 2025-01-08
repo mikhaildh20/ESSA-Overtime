@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('dpo_trpengajuanovertime', function (Blueprint $table) {
             $table->id('pjn_id');
+            $table->string('pjn_id_alternative');
             $table->unsignedBigInteger('pjn_type');
             $table->string('pjn_description');
             $table->string('pjn_excel_proof');

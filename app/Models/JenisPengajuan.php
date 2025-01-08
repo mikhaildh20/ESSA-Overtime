@@ -18,4 +18,24 @@ class JenisPengajuan extends Model
         'jpj_status'
     ];
 
+
+    /**
+     * Sanitasi nama kolom untuk query 'order by'
+     * Menjamin hanya kolom yang aman yang digunakan untuk pengurutan.
+     *
+     * @param string $column
+     * @return string
+     */
+    public static function sanitizeColumn(string $column): string
+    {
+        // Daftar kolom yang aman untuk diurutkan
+        $allowedColumns = [
+            'jpj_id',      // ID Jenis Pengajuan
+            'jpj_name',    // Nama Jenis Pengajuan
+            'jpj_status',  // Status Jenis Pengajuan
+        ];
+
+        // Mengembalikan nama kolom yang valid, jika tidak valid, gunakan default
+        return in_array($column, $allowedColumns) ? $column : 'jpj_name'; // Default ke jbt_name jika tidak valid
+    }
 }
