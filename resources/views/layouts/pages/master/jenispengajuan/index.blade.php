@@ -8,7 +8,7 @@
     </style>
 
     <!-- Container -->
-    <div class="container my-5">
+    <div class="container-fluid my-5">
         <h1 class="mb-4">Data Jenis Pengajuan</h1>
 
         <!-- Create Button -->
@@ -77,6 +77,7 @@
         <div class="mt-4">
             {{ $pagination->links('vendor.pagination.bootstrap-5') }}
         </div>
+    </div>
 
 
     <!-- Modal Konfirmasi -->

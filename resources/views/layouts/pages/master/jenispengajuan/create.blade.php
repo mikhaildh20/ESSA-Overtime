@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container my-5">
+    <div class="container-fluid my-5">
         <h1 class="mb-4">Tambah Jenis Pengajuan</h1>
 
         <!-- Back Button -->

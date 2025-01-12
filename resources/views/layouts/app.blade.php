@@ -44,6 +44,8 @@
             font-size: 12px;
         }
         .content {
+            max-width: 1200px; 
+            margin: 0 auto;   
             padding: 20px;
         }
         .status {
@@ -79,6 +81,10 @@
             left: 10px;
             font-size: 12px;
             color: #fff;
+        }
+        .wide-content {
+            max-width: 90%;
+            margin: 0 auto;
         }
         @media (max-width: 768px) {
             .header h1 {
@@ -133,8 +139,12 @@
             </ul>
         </nav>
     </div>
-    <div class="content container">
-        @yield('content')
+    <div class="content wide-content container-fluid">
+        <div class="row">
+            <div class="col-12">
+                @yield('content')
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
