@@ -63,11 +63,36 @@
         </div>
     </main>
 
+    <div class="modal" tabindex="-1" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pilih Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-left">
+                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Karyawan</button>
+                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Human Resources</button>
+                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Administrator</button>
+            </div>
+            <div class="modal-footer">
+            </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-light text-center py-3">
         <p class="mb-0">Copyright &copy; 2024 - Employee Self Service Politeknik Astra</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if(@json)
+        window.onload = function() {
+        var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        myModal.show();
+        };
+    </script>
 </body>
 </html>
