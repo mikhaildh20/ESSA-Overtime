@@ -13,6 +13,7 @@ class PengajuanController extends Controller
     {
         
         return view('layouts.pages.transaksi.pengajuan');
+        //return view('layouts.pages.login');
     }
 
     /**

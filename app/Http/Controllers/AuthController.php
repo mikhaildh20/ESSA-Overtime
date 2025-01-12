@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Karyawan;
+use App\Models\Sso;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -15,21 +20,35 @@ class AuthController extends Controller
     // Handle login
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        // Attempt to log the user in using the email and password
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('dashboard'); // Redirect to intended page after login
-        }
-
-        // If authentication fails, return with error message
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+         // Validate the form input
+         $credentials = $request->only('username', 'password');
+         $validator = Validator::make($credentials, [
+             'username' => 'required',
+             'password' => 'required|min:6',
+         ]);
+ 
+         if ($validator->fails()) {
+             return back()->withErrors($validator)->withInput();
+         }
+ 
+         // Check the karyawan table for matching credentials
+         $karyawan = Karyawan::where('kry_username', $credentials['username'])->first();
+ 
+         if ($karyawan && Hash::check($credentials['password'], $karyawan->kry_password)) {
+             // Check the roles from the sso table
+             $roles = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray();
+ 
+             // If there is at least one role, show the role selection modal
+             if (count($roles) > 0) {
+                 // Pass roles to the login view
+                 return view('auth.login', ['roles' => $roles, 'karyawan' => $karyawan]);
+             }
+ 
+             // If no roles found, return an error
+             return back()->with('error', 'No roles found for this user.');
+         }
+ 
+         return back()->with('error', 'Invalid credentials');
     }
 
     // Handle logout
