@@ -10,37 +10,42 @@ use App\Http\Controllers\JenisPengajuanController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login',[AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->name('submitLogin');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::get('/', function(){
-    return view('layouts.pages.dashboard');
-})->name('index');
+Route::middleware('auth')->group(function(){
+    Route::get('/', function(){
+        return view('layouts.pages.dashboard');
+    })->name('index');
+});
 
+// Otorisasi Karyawan
 Route::middleware(['auth','role:1'])->group(function(){
     Route::resource('pengajuan',PengajuanController::class);
 });
 
+// Otorisasi Human Resources
 Route::middleware(['auth','role:2'])->group(function(){
+    
+});
+
+// Otorisasi Admin
+Route::middleware(['auth','role:3'])->group(function(){
+    // Master Jabatan
     Route::resource('jabatan',JabatanController::class);
     Route::put('/jabatan/{id}/update_status', [JabatanController::class, 'update_status'])->name('jabatan.update_status');
     
+    // Master Karyawan
     Route::resource('karyawan',KaryawanController::class);
     Route::put('/karyawan/{id}/update_status', [KaryawanController::class, 'update_status'])->name('karyawan.update_status');
     
+    // Master SSO
     Route::resource('sso',SsoController::class);
     Route::put('/sso/{id}/update_status', [SsoController::class, 'update_status'])->name('sso.update_status');
     
+    // Master Jenis Pengajuan
     Route::resource('jenis_pengajuan',JenisPengajuanController::class);
     Route::put('/jenis_pengajuan/{id}/update_status', [JenisPengajuanController::class, 'update_status'])->name('jenis_pengajuan.update_status');
 });
 
-Route::middleware(['auth','role:3'])->group(function(){
-
-});
-
-
-
-// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-// Route::post('/login', [AuthController::class, 'login']);
-// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

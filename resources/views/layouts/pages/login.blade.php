@@ -42,19 +42,20 @@
             <div class="card-body">
                 <h3 class="mb-4 text-center">Selamat Datang</h3>
                 <hr />
-                <!-- @if($errors->any())
-                    <div class="alert alert-danger custom-alert" role="alert">
-                        Invalid Credentials.
+                @if(session('error'))
+                    <div class="alert alert-danger custom-alert">
+                        {{ session('error') }}
                     </div>
-                @endif -->
-                <form>
+                @endif
+                <form action="{{ route('submitLogin') }}" method="POST">
+                    @csrf
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" id="username" placeholder="Username">
+                        <input type="text" name="username" class="form-control" id="username" value="{{ old('username') }}" placeholder="Username">
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+                        <input type="password" name="password" class="form-control" id="password" value="{{ old('password') }}" placeholder="Password">
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                 </form>

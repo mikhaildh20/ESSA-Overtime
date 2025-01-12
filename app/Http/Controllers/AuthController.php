@@ -24,7 +24,7 @@ class AuthController extends Controller
          $credentials = $request->only('username', 'password');
          $validator = Validator::make($credentials, [
              'username' => 'required',
-             'password' => 'required|min:6',
+             'password' => 'required',
          ]);
  
          if ($validator->fails()) {
@@ -41,14 +41,14 @@ class AuthController extends Controller
              // If there is at least one role, show the role selection modal
              if (count($roles) > 0) {
                  // Pass roles to the login view
-                 return view('auth.login', ['roles' => $roles, 'karyawan' => $karyawan]);
+                 return view('login', ['roles' => $roles, 'karyawan' => $karyawan]);
              }
  
              // If no roles found, return an error
-             return back()->with('error', 'No roles found for this user.');
+             return back()->with('error', 'User ini belum mendapatkan hak akses');
          }
  
-         return back()->with('error', 'Invalid credentials');
+         return back()->with('error', 'Username atau password salah!');
     }
 
     // Handle logout
@@ -58,6 +58,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('login');
     }
 }

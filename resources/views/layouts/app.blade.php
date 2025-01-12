@@ -115,26 +115,31 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('karyawan.index') }}">Karyawan</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('sso.index') }}">SSO</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('jenis_pengajuan.index') }}">Jenis Pengajuan</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
-                </li>
+                @if(session('role') == 1')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
+                    </li>
+                @elseif(session('role') == 2')
+
+                @elseif(session('role') == 3')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('karyawan.index') }}">Karyawan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sso.index') }}">SSO</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('jenis_pengajuan.index') }}">Jenis Pengajuan</a>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a class="nav-link" href="#">Notifikasi <span class="notification">45686</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Hai, Ruci</a>
+                    <a class="nav-link" href="#">Hai, {{ session('nama_karyawan') }}</a>
                 </li>
             </ul>
         </nav>
