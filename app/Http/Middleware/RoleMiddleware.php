@@ -21,13 +21,11 @@ class RoleMiddleware
 
     public function handle(Request $request, Closure $next, $role)
     {
-        // if (!Auth::check() || !Auth::user()->hasRole($role)) {
-        //     return redirect('login'); // Redirect if not authorized
-        // }
-        if (session('role') !== $role) {
-            return redirect('login');
+        // Ensure the user is logged in and has the correct role
+        if (Auth::check() && session('role') === $role) {
+            return $next($request);
         }
 
-        return $next($request);
+        return redirect()->route('login')->with('error', 'You do not have access to this page.');
     }
 }
