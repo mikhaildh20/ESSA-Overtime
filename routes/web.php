@@ -11,6 +11,7 @@ use App\Http\Controllers\JenisPengajuanController;
 Route::middleware('guest')->group(function () {
     Route::get('/login',[AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('submitLogin');
+    Route::post('/authenticate-role', [AuthController::class, 'authenticate'])->name('authenticate');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

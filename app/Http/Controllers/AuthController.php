@@ -6,49 +6,84 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use App\Models\Karyawan;
 use App\Models\Sso;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    // Get the rate limiter key for the login attempt
+    protected function getLoginRateLimiterKey(Request $request)
+    {
+        return 'login:' . $request->ip(); // Use IP address as the key for rate limiting
+    }
+
+    // Increment the login attempts counter
+    protected function incrementLoginAttempts(Request $request)
+    {
+        RateLimiter::hit($this->getLoginRateLimiterKey($request));
+    }
+
+     // Rate limiting to prevent brute force attacks
+    protected function checkLoginAttempts(Request $request)
+    {
+        $key = $this->getLoginRateLimiterKey($request);
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            throw ValidationException::withMessages(['username' => 'Terlalu banyak upaya masuk. Coba lagi nanti.']);
+        }
+    }
+
     public function showLoginForm()
     {
-        return view('layouts.pages.login');
+        $roles = $request->session()->get('roles', []);
+        $karyawan = $request->session()->get('karyawan', null);
+
+        return view('login', compact('roles', 'karyawan'));
     }
 
     // Handle login
     public function login(Request $request)
     {
-         // Validate the form input
-         $credentials = $request->only('username', 'password');
-         $validator = Validator::make($credentials, [
-             'username' => 'required',
-             'password' => 'required',
-         ]);
- 
-         if ($validator->fails()) {
-             return back()->withErrors($validator)->withInput();
-         }
- 
-         // Check the karyawan table for matching credentials
-         $karyawan = Karyawan::where('kry_username', $credentials['username'])->first();
- 
-         if ($karyawan && Hash::check($credentials['password'], $karyawan->kry_password)) {
-             // Check the roles from the sso table
-             $roles = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray();
- 
-             // If there is at least one role, show the role selection modal
-             if (count($roles) > 0) {
-                 // Pass roles to the login view
-                 return view('login', ['roles' => $roles, 'karyawan' => $karyawan]);
-             }
- 
-             // If no roles found, return an error
-             return back()->with('error', 'User ini belum mendapatkan hak akses');
-         }
- 
-         return back()->with('error', 'Username atau password salah!');
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+         // Apply rate limiting on login attempts to prevent brute force attacks
+        $this->checkLoginAttempts($request);
+
+        $karyawan = Karyawan::where('kry_username', $request->username)->first();
+
+        if (!$karyawan || !Hash::check($request->password, $karyawan->kry_password)) {
+            $this->incrementLoginAttempts($request);
+            return back()->with('error', 'Kredensial tidak valid.');
+        }
+
+        $roles = Sso::where('kry_id', $karyawan->kry_id)->get();
+        $request->session()->put('roles',$roles);
+        $request->session()->put('karyawan',$karyawan);
+
+        return view('login');
+    }
+
+    public function authenticate(Request $request)
+    {
+        $karyawan = session('karyawan');
+
+        if(!$karyawan)
+        {
+            return redirect()->route('login')->with('error', 'Sesi telah berakhir, silahkan login kembali!');
+        }
+
+        $role = $request->input('role');
+        if(!in_array($role,session('roles')))
+        {
+            return redirect()->route('login')->with('error','Aksi dilarang!');
+        }
     }
 
     // Handle logout

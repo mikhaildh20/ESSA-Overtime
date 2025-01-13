@@ -21,8 +21,11 @@ class RoleMiddleware
 
     public function handle(Request $request, Closure $next, $role)
     {
-        if (!Auth::check() || !Auth::user()->hasRole($role)) {
-            return redirect('login'); // Redirect if not authorized
+        // if (!Auth::check() || !Auth::user()->hasRole($role)) {
+        //     return redirect('login'); // Redirect if not authorized
+        // }
+        if (session('role') !== $role) {
+            return redirect('login');
         }
 
         return $next($request);

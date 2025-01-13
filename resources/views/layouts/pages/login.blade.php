@@ -23,6 +23,12 @@
             padding: 0.5rem 1rem; /* Adjust the padding */
             margin: 0.5rem 0; /* Adjust the margin */
         }
+        .list-group-item {
+            border-radius: 4px;
+        }
+        .list-group-item + .list-group-item {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body style="background-image: url('{{ asset('images/background.jpg') }}'); background-size: cover; background-repeat: no-repeat; background-position: center;">
@@ -63,20 +69,28 @@
         </div>
     </main>
 
-    <div class="modal" tabindex="-1" id="myModal">
+
+    <!-- Modal -->
+    <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Pilih Login</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-left">
-                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Karyawan</button>
-                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Human Resources</button>
-                <button type="button" class="btn btn-light w-100 border mb-3 text-start">Masuk sebagai Administrator</button>
-            </div>
-            <div class="modal-footer">
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roleModalLabel">Pilih Peran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai ADMIN PRODUKSI</a>
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai DIREKTUR PRODUKSI</a>
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai ENGINEERING</a>
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai MARKETING</a>
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai PPIC</a>
+                        <a href="#" class="list-group-item list-group-item-action">Login sebagai TEAM QC</a>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
@@ -87,12 +101,5 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        if(@json)
-        window.onload = function() {
-        var myModal = new bootstrap.Modal(document.getElementById('myModal'));
-        myModal.show();
-        };
-    </script>
 </body>
 </html>
