@@ -115,13 +115,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
-                @if(session('role') == 1')
+                @if(session('role') == 1)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
                     </li>
-                @elseif(session('role') == 2')
+                @elseif(session('role') == 2)
 
-                @elseif(session('role') == 3')
+                @elseif(session('role') == 3)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
                     </li>
@@ -139,7 +139,12 @@
                     <a class="nav-link" href="#">Notifikasi <span class="notification">45686</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Hai, {{ session('nama_karyawan') }}</a>
+                    <a class="nav-link" href="#">Hai, {{ session('kry_name') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </a>
                 </li>
             </ul>
         </nav>
@@ -148,6 +153,31 @@
         <div class="row">
             <div class="col-12">
                 @yield('content')
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Keluar</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin keluar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <!-- Form for Logout POST Request -->
+                    <form id="logoutForm" action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Keluar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

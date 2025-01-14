@@ -132,8 +132,8 @@ class KaryawanController extends Controller
             $karyawan->kry_username = $request->input('kry_username'); // Username dari input request
             $karyawan->kry_email = $request->input('kry_email'); // Email dari input request
             $karyawan->kry_status = 1; // Status karyawan aktif (1)
-            $karyawan->kry_created_by = 'mike'; // Pengguna yang membuat data (misalnya 'mike')
-            $karyawan->kry_modified_by = 'mike'; // Pengguna yang terakhir mengubah data (misalnya 'mike')
+            $karyawan->kry_created_by = session('kry_name'); // Pengguna yang membuat data sesuai session
+            $karyawan->kry_modified_by = null;
 
             // Menyimpan data karyawan baru ke dalam database
             $karyawan->save();
@@ -232,7 +232,7 @@ class KaryawanController extends Controller
         $karyawan->jbt_id = $request->input('jbt_id');
         $karyawan->kry_username = $request->input('kry_username');
         $karyawan->kry_email = $request->input('kry_email');
-        $karyawan->kry_modified_by = 'mike';
+        $karyawan->kry_modified_by = session('kry_name');
 
         // Simpan perubahan data ke database.
         $karyawan->save();

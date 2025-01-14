@@ -14,18 +14,24 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    // public function handle(Request $request, Closure $next): Response
-    // {
-    //     return $next($request);
-    // }
 
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$role)
     {
-        // Ensure the user is logged in and has the correct role
-        if (Auth::check() && session('role') === $role) {
-            return $next($request);
+        // Check if the session has a role
+        if (!session()->has('role')) {
+            return redirect()->route('login')->with('error', 'Login terlebih dahulu!');
         }
 
-        return redirect()->route('login')->with('error', 'You do not have access to this page.');
+        // Get the current user's role
+        $userRole = session('role');
+
+        // Check if the user's role is authorized to access the page
+        if (!in_array($userRole, $role)) {
+            return redirect('/');
+        }
+
+        // Proceed to the next request if authorized
+        return $next($request);
     }
+
 }

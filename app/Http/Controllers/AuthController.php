@@ -37,17 +37,19 @@ class AuthController extends Controller
         }
     }
 
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
-        $roles = $request->session()->get('roles', []);
-        $karyawan = $request->session()->get('karyawan', null);
-
-        return view('login', compact('roles', 'karyawan'));
+        return view('layouts.pages.login');
     }
 
     // Handle login
     public function login(Request $request)
     {
+        if(Auth::check())
+        {
+            $this->logout();
+        }
+
         $request->validate([
             'username' => 'required|string|max:255',
             'password' => 'required|string|min:8',
@@ -63,27 +65,37 @@ class AuthController extends Controller
             return back()->with('error', 'Kredensial tidak valid.');
         }
 
-        $roles = Sso::where('kry_id', $karyawan->kry_id)->get();
-        $request->session()->put('roles',$roles);
-        $request->session()->put('karyawan',$karyawan);
+        $sso = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray();
+        if(count($sso) == 0){
+            return back()->with('error','User ini belum mempunyai hak akses.');
+        }
 
-        return view('login');
+        session([
+            'kry_id' => $karyawan->kry_id_alternative,
+            'roles' => $sso,
+            'kry_name' => $karyawan->kry_name
+        ]);
+
+        return redirect('login');
     }
 
     public function authenticate(Request $request)
     {
-        $karyawan = session('karyawan');
-
-        if(!$karyawan)
+        if(Auth::check())
         {
-            return redirect()->route('login')->with('error', 'Sesi telah berakhir, silahkan login kembali!');
+            $this->logout();
         }
 
         $role = $request->input('role');
-        if(!in_array($role,session('roles')))
+        if(in_array($role, session('roles',[])))
         {
-            return redirect()->route('login')->with('error','Aksi dilarang!');
+            Auth::loginUsingId(session('kry_id'));
+            session(['role' => $role]);
+            session()->regenerate();
+            return redirect('/');
         }
+
+        return back()->with('error', 'Tindakan dilarang.');
     }
 
     // Handle logout
