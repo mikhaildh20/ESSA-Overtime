@@ -35,7 +35,7 @@
             </div>
 
             <div class="mt-4">
-                <a href="#" class="btn btn-secondary">
+                <a href="{{ route('pengajuan.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </div>

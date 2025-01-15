@@ -30,6 +30,7 @@
     </div>
     @endif
 
+    <h1>Tambah Pengajuan Lembur</h1>
     <form action="{{ route('pengajuan.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
