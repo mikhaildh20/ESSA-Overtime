@@ -38,6 +38,7 @@
                 <tr>
                     <th>No.</th>
                     <th>ID Karyawan </th>
+                    <th>Nama</th>
                     <th>Jenis Pengajuan</th>
                     <th>Tanggal Pengajuan</th>
                     <th>Status</th>
@@ -48,6 +49,7 @@
                 <tr>
                     <td>1</td>
                     <td>KRY001</td>
+                    <td>Mikhail Daffa Herdiansah</td>
                     <td>Panitia Acara</td>
                     <td>20 Oktober 2004</td>
                     <td>Draft</td>

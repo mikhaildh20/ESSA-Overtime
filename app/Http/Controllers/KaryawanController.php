@@ -37,6 +37,7 @@ class KaryawanController extends Controller
             ->when($search, function ($query, $search) { // Tambahkan kondisi pencarian jika input 'search' ada
                 return $query->where('kry_name', 'like', '%' . $search . '%'); // Filter data berdasarkan nama karyawan
             })
+            ->where('kry_id_alternative','!=',session('kry_id'))
             ->orderBy(Karyawan::sanitizeColumn('kry_name'), $sort) // Urutkan berdasarkan kolom yang disanitasi
             ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
 
@@ -194,6 +195,10 @@ class KaryawanController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if(session('kry_id') == $id)
+        {
+            return redirect()->route('karyawan.index')->with('error','Anda tidak diizinkan untuk mengubah data ini.');
+        }
         // Cari data karyawan berdasarkan alternative ID
         $karyawan = Karyawan::where('kry_id_alternative', $id)->firstOrFail();
 
@@ -276,6 +281,10 @@ class KaryawanController extends Controller
 
     public function update_status(string $id)
     {
+        if(session('kry_id') == $id)
+        {
+            return redirect()->route('karyawan.index')->with('error','Anda tidak diizinkan untuk menghapus data ini.');
+        }
          // Cari karyawan berdasarkan Alternative ID
         $karyawan = Karyawan::where('kry_id_alternative',$id)->firstOrFail();
 

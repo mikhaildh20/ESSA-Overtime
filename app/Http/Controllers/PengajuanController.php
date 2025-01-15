@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pengajuan;
+use DataTransferObjects\PengajuanDto;
 
 class PengajuanController extends Controller
 {
@@ -13,7 +15,6 @@ class PengajuanController extends Controller
     {
         
         return view('layouts.pages.transaksi.pengajuan');
-        //return view('layouts.pages.login');
     }
 
     /**
@@ -21,7 +22,7 @@ class PengajuanController extends Controller
      */
     public function create()
     {
-        //
+        return view('layouts.pages.transaksi.create');
     }
 
     /**

@@ -18,93 +18,97 @@ class AuthController extends Controller
     // Get the rate limiter key for the login attempt
     protected function getLoginRateLimiterKey(Request $request)
     {
-        return 'login:' . $request->ip(); // Use IP address as the key for rate limiting
+        return 'login:' . $request->ip(); // Menggunakan alamat IP sebagai kunci untuk pembatasan laju login
     }
 
     // Increment the login attempts counter
     protected function incrementLoginAttempts(Request $request)
     {
-        RateLimiter::hit($this->getLoginRateLimiterKey($request));
+        RateLimiter::hit($this->getLoginRateLimiterKey($request)); // Menambah hit pada rate limiter untuk kunci login
     }
 
-     // Rate limiting to prevent brute force attacks
+    // Rate limiting to prevent brute force attacks
     protected function checkLoginAttempts(Request $request)
     {
-        $key = $this->getLoginRateLimiterKey($request);
+        $key = $this->getLoginRateLimiterKey($request); // Mendapatkan kunci pembatasan laju login berdasarkan IP
 
-        if (RateLimiter::tooManyAttempts($key, 5)) {
-            throw ValidationException::withMessages(['username' => 'Terlalu banyak upaya masuk. Coba lagi nanti.']);
+        if (RateLimiter::tooManyAttempts($key, 5)) { // Memeriksa apakah upaya login melebihi batas maksimum
+            throw ValidationException::withMessages(['username' => 'Terlalu banyak upaya masuk. Coba lagi nanti.']); // Melempar pengecualian jika batas dilanggar
         }
     }
 
+    // Show login form
     public function showLoginForm(Request $request)
     {
-        return view('layouts.pages.login');
+        return view('layouts.pages.login'); // Menampilkan halaman formulir login
     }
 
     // Handle login
     public function login(Request $request)
     {
-        if(Auth::check())
+        if(Auth::check()) // Jika pengguna sudah login
         {
-            $this->logout();
+            $this->logout(); // Logout pengguna yang sedang aktif
         }
 
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'required|string|min:8',
+        $request->validate([ // Validasi input login
+            'username' => 'required|string|max:255', // Username wajib diisi, tipe string, dan maksimal 255 karakter
+            'password' => 'required|string|min:8', // Password wajib diisi, tipe string, dan minimal 8 karakter
         ]);
 
-         // Apply rate limiting on login attempts to prevent brute force attacks
-        $this->checkLoginAttempts($request);
+        // Apply rate limiting on login attempts to prevent brute force attacks
+        $this->checkLoginAttempts($request); // Memeriksa pembatasan laju untuk upaya login
 
-        $karyawan = Karyawan::where('kry_username', $request->username)->first();
+        $karyawan = Karyawan::where('kry_username', $request->username)->first(); // Mencari pengguna berdasarkan username
 
-        if (!$karyawan || !Hash::check($request->password, $karyawan->kry_password)) {
-            $this->incrementLoginAttempts($request);
-            return back()->with('error', 'Kredensial tidak valid.');
+        if (!$karyawan || !Hash::check($request->password, $karyawan->kry_password)) { // Memeriksa apakah pengguna ada dan password sesuai
+            $this->incrementLoginAttempts($request); // Menambah hit rate limiter jika login gagal
+            return back()->with('error', 'Kredensial tidak valid.'); // Mengembalikan pesan error jika kredensial tidak valid
         }
 
-        $sso = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray();
-        if(count($sso) == 0){
-            return back()->with('error','User ini belum mempunyai hak akses.');
+        $sso = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray(); // Mengambil level akses (sso_level) pengguna
+        if(count($sso) == 0){ // Memeriksa apakah pengguna tidak memiliki level akses
+            return back()->with('error','User ini belum mempunyai hak akses.'); // Mengembalikan pesan error jika tidak ada hak akses
         }
 
-        session([
-            'kry_id' => $karyawan->kry_id_alternative,
-            'roles' => $sso,
-            'kry_name' => $karyawan->kry_name
+        session([ // Menyimpan data pengguna di session
+            'kry_id' => $karyawan->kry_id_alternative, // ID alternatif karyawan
+            'roles' => $sso, // Level akses pengguna
+            'kry_name' => $karyawan->kry_name // Nama karyawan
         ]);
 
-        return redirect('login');
+        return redirect('login'); // Mengarahkan ke halaman login
     }
 
+    // Authenticate user based on selected role
     public function authenticate(Request $request)
     {
-        if(Auth::check())
+        if(Auth::check()) // Jika pengguna sudah login
         {
-            $this->logout();
+            $this->logout(); // Logout pengguna aktif
         }
 
-        $role = $request->input('role');
-        if(in_array($role, session('roles',[])))
+        $role = $request->input('role'); // Mendapatkan role yang dipilih dari input
+        if(in_array($role, session('roles',[]))) // Memeriksa apakah role termasuk dalam daftar roles yang disimpan di session
         {
-            Auth::loginUsingId(session('kry_id'));
-            session(['role' => $role]);
-            session()->regenerate();
-            return redirect('/');
+            Auth::loginUsingId(session('kry_id')); // Login pengguna berdasarkan ID karyawan
+            session(['role' => $role]); // Menyimpan role aktif di session
+            // Mencegah session hijacking
+            session()->regenerate(); // Meregenerasi session untuk keamanan
+            return redirect('/'); // Mengarahkan ke halaman utama
         }
 
-        return back()->with('error', 'Tindakan dilarang.');
+        return back()->with('error', 'Tindakan dilarang.'); // Mengembalikan pesan error jika role tidak valid
     }
 
     // Handle logout
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::logout(); // Logout pengguna dari sistem
+        $request->session()->invalidate(); // Menghapus seluruh data session
+        $request->session()->regenerateToken(); // Meregenerasi token CSRF untuk keamanan
 
-        return redirect('login');
+        return redirect('login'); // Mengarahkan kembali ke halaman login
     }
+
 }

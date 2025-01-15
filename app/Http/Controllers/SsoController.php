@@ -28,14 +28,18 @@ class SsoController extends Controller
 
         // Ambil data SSO dengan relasi ke tabel karyawan dan jabatan menggunakan Eloquent
         $data = Sso::with(['dpo_mskaryawan.dpo_msjabatan']) // Ambil relasi 'dpo_mskaryawan' dan 'dpo_msjabatan'
-            ->where('sso_status',1) // Filter berdasarkan sso_status
-            ->when($search, function ($query, $search) { // Jika ada input 'search'
-                return $query->whereHas('dpo_mskaryawan', function ($query) use ($search) { // Filter berdasarkan nama karyawan
-                    $query->where('kry_name', 'like', '%' . $search . '%'); // Nama karyawan mengandung input 'search'
-                });
-            })
-            ->orderBy(Sso::sanitizeColumn('dpo_mskaryawan.kry_name'), $sort) // Urutkan berdasarkan nama karyawan dengan sort direction
-            ->paginate(10); // Batasi hasil query menjadi 10 data per halaman
+                ->where('sso_status', 1) // Filter berdasarkan sso_status
+                ->when($search, function ($query, $search) { // Jika ada input 'search'
+                    return $query->whereHas('dpo_mskaryawan', function ($query) use ($search) { // Filter berdasarkan nama karyawan
+                        $query->where('kry_name', 'like', '%' . $search . '%'); // Nama karyawan mengandung input 'search'
+                    });
+                })
+                ->whereHas('dpo_mskaryawan', function ($query) { // Tambahkan kondisi untuk kry_id_alternative
+                    $query->where('kry_id_alternative', '!=', session('kry_id')); // Filter jika tidak sama dengan kry_id_alternative saat ini
+                })
+                ->orderBy(Sso::sanitizeColumn('dpo_mskaryawan.kry_name'), $sort) // Urutkan berdasarkan nama karyawan dengan sort direction
+                ->paginate(10); // Batasi hasil query menjadi 10 data per halaman
+
 
         // Konversi data hasil query ke dalam bentuk DTO (Data Transfer Object)
         $dto = $data->map(function ($sso) { // Proses setiap data SSO
@@ -63,7 +67,9 @@ class SsoController extends Controller
     public function create()
     {
         // Mengambil semua data karyawan yang memiliki status aktif (status = 1) dari tabel karyawan.
-        $karyawan = Karyawan::where('kry_status', 1)->get();
+        $karyawan = Karyawan::where('kry_status', 1) // Filter berdasarkan kry_status
+                    ->where('kry_id_alternative', '!=', session('kry_id')) // Filter kry_id_alternative tidak sama dengan nilai saat ini
+                    ->get();
 
         // Melakukan mapping terhadap koleksi karyawan, dan mengubah setiap elemen menjadi objek KaryawanDto
         // yang berisi kry_id dan kry_name dari setiap karyawan.
@@ -98,6 +104,10 @@ class SsoController extends Controller
             'kry_id.unique' => 'Data sudah ada!' // Custom error message
         ]);
 
+        $user = Karyawan::findOrFail($request->input('kry_id'));
+        if(session('kry_id') == $user->kry_id_alternative){
+            return redirect()->route('sso.index')->with('error', 'Anda tidak diizinkan untuk menambahkan data ini.');
+        }
 
         try{
             // Membuat instance baru dari model Karyawan dan mengisi atributnya
@@ -105,8 +115,8 @@ class SsoController extends Controller
             $sso->kry_id = $request->input('kry_id');
             $sso->sso_level = $request->input('level');
             $sso->sso_status = 1; // Status karyawan aktif (1)
-            $sso->sso_created_by = 'mike'; // Pengguna yang membuat data (misalnya 'mike')
-            $sso->sso_modified_by = 'mike'; // Pengguna yang terakhir mengubah data (misalnya 'mike')
+            $sso->sso_created_by = session('kry_name'); // Pengguna yang membuat data (misalnya 'mike')
+            $sso->sso_modified_by = null; // Pengguna yang terakhir mengubah data (misalnya 'mike')
 
             // Menyimpan data karyawan baru ke dalam database
             $sso->save();
@@ -132,6 +142,11 @@ class SsoController extends Controller
     public function edit(string $id)
     {
         $sso = Sso::findOrFail($id);
+        $user = Karyawan::findOrFail($sso->kry_id);
+        if(session('kry_id') == $user->kry_id_alternative){
+            return redirect()->route('sso.index')->with('error', 'Anda tidak diizinkan untuk melakukan mengubah data ini.');
+        }
+
         $karyawan = Karyawan::where('kry_status',1)->get();
 
         $dto = $karyawan->map(function($data) {
@@ -167,12 +182,16 @@ class SsoController extends Controller
         try {
             // Ambil record yang akan diupdate berdasarkan ID
             $sso = Sso::findOrFail($id);
+            $user = Karyawan::findOrFail($sso->kry_id);
+            if(session('kry_id') == $user->kry_id_alternative){
+                return redirect()->route('sso.index')->with('error', 'Anda tidak diizinkan untuk mengubah data ini.');
+            }
 
             // Update field yang diperlukan
             $sso->kry_id = $request->input('kry_id');
             $sso->sso_level = $request->input('level');
             $sso->sso_status = 1; // Status karyawan aktif (1)
-            $sso->sso_modified_by = 'mike'; // Pengguna yang terakhir mengubah data (misalnya 'mike')
+            $sso->sso_modified_by = session('kry_name'); // Pengguna yang terakhir mengubah data (misalnya 'mike')
 
             // Simpan perubahan ke database
             $sso->save();
@@ -197,6 +216,10 @@ class SsoController extends Controller
     {
          // Cari karyawan berdasarkan Alternative ID
         $sso = Sso::findOrFail($id);
+        $karyawan = Karyawan::findOrFail($sso->kry_id);
+        if(session('kry_id') == $karyawan->kry_id_alternative){
+            return redirect()->route('sso.index')->with('error', 'Anda tidak diizinkan untuk melakukan penghapusan data ini.');
+        }
 
         // Menentukan status dan pesan berdasarkan status karyawan saat ini
         $status = $sso->sso_status == 1 ? 0 : 1;

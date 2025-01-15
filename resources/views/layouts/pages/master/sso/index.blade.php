@@ -22,6 +22,12 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('sso.index') }}" method="GET">

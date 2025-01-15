@@ -46,9 +46,13 @@
                     <input type="file" class="form-control-file" id="bukti-excel">
                 </div>
             </div>
-            <div class="buttons mt-3">
-                <button type="button" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+            <div class="d-flex justify-content-start mt-3">
+                <a href="{{ route('pengajuan.index') }}" class="btn btn-secondary mr-2">
+                    <i class="fas fa-times"></i> Batal
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
             </div>
         </form>
 
