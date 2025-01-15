@@ -1,102 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-        <style>
-            .bordered {
-                border: 1px solid #007bff; /* Bootstrap primary color */
-                padding: 15px;
-                border-radius: 5px;
-            }
-            hr {
-                border-top: 2px solid #007bff; /* Blue color for the horizontal line */
-            }
-            .document-container {
-                background-color: #f7f7f7; /* Grey background */
-                padding: 10px;
-                border-radius: 5px;
-                margin-top: 20px;
-            }
-            .document-item {
-                background-color: #f0f0f0;
-                padding: 10px; 
-                margin: 5px 0; 
-                border-radius: 5px;
-                border: 1px solid #a9a9a9;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .btn-download {
-                background-color: #007bff;
-                color: white;
-                padding: 5px 15px;
-                text-decoration: none;
-                border-radius: 5px;
-            }
-            .btn-download:hover {
-                background-color: #0056b3;
-            }
-            .document-header {
-                font-size: 1.2rem;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-        </style>
-
-        <h2 class="mb-4">Detail Pengajuan Lembur</h2>
-
-        <hr />
-
-        <!-- Informasi Pengajuan -->
-        <div class="row mb-3">
-            <div class="col-md-6 mb-3">
-                <label for="nidn" class="form-label">NIDN</label>
-                <input type="text" id="nidn" class="form-control" value="0320230125" readonly>
+<div class="container-fluid my-5">
+    <h1 class="my-4">Detail Pengajuan</h1>
+    <div class="card">
+        <div class="card-header">
+            <h5>Pengajuan #123</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>ID Karyawan:</strong> K001</p>
+                    <p><strong>Nama Lengkap:</strong> John Doe</p>
+                    <p><strong>Jenis Pengajuan:</strong> Cuti</p>
+                    <p><strong>Status:</strong> Disetujui</p>
+                    <p><strong>Tanggal Pengajuan:</strong> 15 Januari 2025</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Keterangan:</strong></p>
+                    <p>Pengajuan cuti tahunan untuk liburan keluarga.</p>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label for="nama" class="form-label">Nama</label>
-                <input type="text" id="nama" class="form-control" value="RADIT SURYA WIJAYA" readonly>
+
+            <div class="mt-4">
+                <h5>Dokumen Pendukung</h5>
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action" download>
+                        <i class="fas fa-file-pdf"></i> Bukti Penunjang PDF
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action" download>
+                        <i class="fas fa-file-excel"></i> Bukti Penunjang Excel
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="#" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
             </div>
         </div>
-        <hr>
-
-        <!-- Detail Pengajuan -->
-        <div class="row mb-3">
-            <div class="col-md-6 mb-3">
-                <label for="jenisPengajuan" class="form-label">Jenis Pengajuan</label>
-                <input type="text" id="jenisPengajuan" class="form-control" value="Akademik" readonly>
-            </div>
-            <div class="col-md-6">
-                <label for="status" class="form-label">Status</label>
-                <input type="text" id="status" class="form-control" value="Pending" readonly>
-            </div>
-        </div>
-        <hr>
-
-        <div class="row mb-3">
-            <div class="col-md-6 mb-3">
-                <label for="tanggalPengajuan" class="form-label">Tanggal Pengajuan</label>
-                <input type="text" id="tanggalPengajuan" class="form-control" value="17 November 2024" readonly>
-            </div>
-            <div class="col-md-6">
-                <label for="keterangan" class="form-label">Keterangan</label>
-                <textarea id="keterangan" class="form-control" rows="1" readonly>PANITIA PKKMB 2024</textarea>
-            </div>
-        </div>
-        <hr />
-
-        <!-- Supporting Documents Section -->
-        <div class="document-container">
-            <label class="form-label">Dokumen Pendukung</label>
-            <div class="document-item">
-                <span>Document_1.pdf</span>
-                <a href="#" class="btn-download"><i class="fas fa-download"></i>  Unduh</a>
-            </div>
-            <!-- Add more document items here if needed -->
-        </div>
-
-        <!-- Button Kembali -->
-        <div class="text-start">
-            <a href="#" class="btn btn-secondary">Kembali</a>
-        </div>
+    </div>
+</div>
 @endsection

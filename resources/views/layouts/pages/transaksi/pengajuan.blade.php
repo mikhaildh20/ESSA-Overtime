@@ -67,10 +67,10 @@
                     <td>
                         @if($d->pjn_status == '1')    
                             <a class="btn btn-link" title="Kirim"><i class="fa fa-paper-plane"></i></a>
-                            <a class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
+                            <a href="{{ route('pengajuan.edit',$d->pjn_id) }}" class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
                             <a class="btn btn-link" title="Hapus"><i class="fa fa-trash"></i></a>
                         @endif
-                        <a class="btn btn-link" title="Detail"><i class="fa fa-bars"></i></a>
+                        <a href="{{ route('pengajuan.show',$d->pjn_id) }}" class="btn btn-link" title="Detail"><i class="fa fa-bars"></i></a>
                     </td>
                 </tr>
                 @empty
