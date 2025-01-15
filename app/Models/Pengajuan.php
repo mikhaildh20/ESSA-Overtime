@@ -24,5 +24,32 @@ class Pengajuan extends Model
         'pjn_kry_id'
     ];
 
-    
+    /**
+     * Relasi ke model Jenis Pengajuan
+     */
+    public function dpo_msjenispengajuan()
+    {
+        return $this->belongsTo(JenisPengajuan::class, 'pjn_type', 'jpj_id');
+    }
+
+
+    /**
+     * Sanitasi nama kolom untuk query 'order by'
+     * Menjamin hanya kolom yang aman yang digunakan untuk pengurutan.
+     *
+     * @param string $column
+     * @return string
+     */
+    public static function sanitizeColumn(string $column): string
+    {
+        // Daftar kolom yang aman untuk diurutkan
+        $allowedColumns = [
+            'pjn_type',
+            'pjn_status',
+            'pjn_kry_id',
+        ];
+
+        // Mengembalikan nama kolom yang valid, jika tidak valid, gunakan default
+        return in_array($column, $allowedColumns) ? $column : 'pjn_status'; // Default ke pjn_type jika tidak valid
+    }
 }

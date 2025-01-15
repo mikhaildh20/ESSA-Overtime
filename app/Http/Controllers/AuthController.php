@@ -66,12 +66,15 @@ class AuthController extends Controller
             return back()->with('error', 'Kredensial tidak valid.'); // Mengembalikan pesan error jika kredensial tidak valid
         }
 
-        $sso = Sso::where('kry_id', $karyawan->kry_id)->pluck('sso_level')->toArray(); // Mengambil level akses (sso_level) pengguna
+        $sso = Sso::where('kry_id', $karyawan->kry_id)
+                ->where('sso_status',1)
+                ->pluck('sso_level')->toArray(); // Mengambil level akses (sso_level) pengguna
         if(count($sso) == 0){ // Memeriksa apakah pengguna tidak memiliki level akses
             return back()->with('error','User ini belum mempunyai hak akses.'); // Mengembalikan pesan error jika tidak ada hak akses
         }
 
         session([ // Menyimpan data pengguna di session
+            'topkey' => $karyawan->kry_id,
             'kry_id' => $karyawan->kry_id_alternative, // ID alternatif karyawan
             'roles' => $sso, // Level akses pengguna
             'kry_name' => $karyawan->kry_name // Nama karyawan

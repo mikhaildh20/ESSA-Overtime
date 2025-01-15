@@ -40,29 +40,46 @@
                     <th>ID Karyawan </th>
                     <th>Nama</th>
                     <th>Jenis Pengajuan</th>
-                    <th>Tanggal Pengajuan</th>
+                    <th>Tanggal Buat</th>
                     <th>Status</th>
                     <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
+                @forelse($dto as $d)
                 <tr>
-                    <td>1</td>
-                    <td>KRY001</td>
-                    <td>Mikhail Daffa Herdiansah</td>
-                    <td>Panitia Acara</td>
-                    <td>20 Oktober 2004</td>
-                    <td>Draft</td>
-                    <td>    
-                        <a class="btn btn-link" title="Kirim"><i class="fa fa-paper-plane"></i></a>
-                        <a class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
-                        <a class="btn btn-link" title="Hapus"><i class="fa fa-trash"></i></a>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $alternative }}</td>
+                    <td>{{ $name }}</td>
+                    <td>{{ $d->jpj_name }}</td>
+                    <td>{{ $d->pjn_tanggal ?? 'Belum diajukan' }}</td>
+                    <td>
+                    @if ($d->pjn_status === '1')
+                        Draft
+                    @elseif ($d->pjn_status === '2')
+                        Diajukan
+                    @elseif ($d->pjn_status === '3')
+                        Diterima
+                    @elseif ($d->pjn_status === '4')
+                        Ditolak
+                    @endif
+                    </td>
+                    <td>
+                        @if($d->pjn_status == '1')    
+                            <a class="btn btn-link" title="Kirim"><i class="fa fa-paper-plane"></i></a>
+                            <a class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-link" title="Hapus"><i class="fa fa-trash"></i></a>
+                        @endif
                         <a class="btn btn-link" title="Detail"><i class="fa fa-bars"></i></a>
                     </td>
                 </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Belum ada data.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
-
     </div>
 
 

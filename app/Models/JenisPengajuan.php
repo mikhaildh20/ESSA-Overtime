@@ -18,6 +18,10 @@ class JenisPengajuan extends Model
         'jpj_status'
     ];
 
+    public function dpo_trpengajuanovertime()
+    {
+        return $this->hasMany(Pengajuan::class, 'jpj_id', 'pjn_type'); // Relasi dengan model Karyawan
+    }
 
     /**
      * Sanitasi nama kolom untuk query 'order by'
