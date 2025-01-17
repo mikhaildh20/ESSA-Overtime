@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('kry_email');
             $table->string('kry_status');
             $table->string('kry_created_by');
-            $table->string('kry_modified_by');
+            $table->string('kry_modified_by')->nullable();
             $table->timestamps();
 
             // Add a unique constraint on the composite key

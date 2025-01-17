@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('ntf_message');
             $table->string('ntf_status');
             $table->string('ntf_created_by');
-            $table->string('ntf_modified_by');
+            $table->string('ntf_modified_by')->nullable();
             $table->unsignedBigInteger('ntf_pjn_id');
             $table->timestamps();
         });

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('pjn_review_notes');
             $table->string('pjn_status');
             $table->string('pjn_created_by');
-            $table->string('pjn_modified_by');
+            $table->string('pjn_modified_by')->nullable();
             $table->unsignedBigInteger('pjn_kry_id');
             $table->timestamps();
 
