@@ -5,32 +5,44 @@
     <h1 class="my-4">Detail Pengajuan</h1>
     <div class="card">
         <div class="card-header">
-            <h5>Pengajuan #123</h5>
+        <h5>{{ $dto->pjn_id_alternative == 'Draft' ? 'Draft ' : '' }}Pengajuan {{ $dto->pjn_id_alternative == 'Draft' ? '' : $dto->pjn_id_alternative }}</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>ID Karyawan:</strong> K001</p>
-                    <p><strong>Nama Lengkap:</strong> John Doe</p>
-                    <p><strong>Jenis Pengajuan:</strong> Cuti</p>
-                    <p><strong>Status:</strong> Disetujui</p>
-                    <p><strong>Tanggal Pengajuan:</strong> 15 Januari 2025</p>
+                    <p><strong>ID Karyawan:</strong> {{ $session_alternative }}</p>
+                    <p><strong>Nama Lengkap:</strong> {{ $session_name }}</p>
+                    <p><strong>Jenis Pengajuan:</strong> {{ $dto->jpj_name  }}</p>
+                    <p><strong>Status:</strong> 
+                        @if($dto->pjn_status == '1')
+                            Draft
+                        @elseif($dto->pjn_status == '2')
+                            Menunggu Approval HRD
+                        @elseif($dto->pjn_status == '3')
+                            Terverifikasi HRD
+                        @elseif($dto->pjn_status == '4')
+                            Ditolak
+                        @endif
+                    </p>
+                    <p><strong>Tanggal Pengajuan:</strong> {{$dto->pjn_tanggal}}</p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Keterangan:</strong></p>
-                    <p>Pengajuan cuti tahunan untuk liburan keluarga.</p>
+                    <p>{{ $dto->pjn_keterangan }}</p>
                 </div>
             </div>
 
             <div class="mt-4">
                 <h5>Dokumen Pendukung</h5>
                 <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action" download>
-                        <i class="fas fa-file-pdf"></i> Bukti Penunjang PDF
+                    <a href="{{ route('pengajuan.download', $dto->pjn_pdf) }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-pdf"></i> {{ $dto->pjn_pdf }}
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action" download>
-                        <i class="fas fa-file-excel"></i> Bukti Penunjang Excel
+                    @if($dto->pjn_excel)
+                    <a href="{{ route('pengajuan.download', $dto->pjn_excel) }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-excel"></i> {{ $dto->pjn_excel }}
                     </a>
+                    @endif
                 </div>
             </div>
 

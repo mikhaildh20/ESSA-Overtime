@@ -78,11 +78,12 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'), // Ubah ke 'id' untuk Bahasa Indonesia
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'id'), // Ubah ke 'id' agar fallback juga menggunakan Bahasa Indonesia
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'), // Ubah ke 'id_ID' untuk faker Bahasa Indonesia
+
 
     /*
     |--------------------------------------------------------------------------

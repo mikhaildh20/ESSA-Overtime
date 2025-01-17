@@ -25,6 +25,12 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('pengajuan.index') }}" method="GET">
@@ -57,20 +63,32 @@
                     @if ($d->pjn_status === '1')
                         Draft
                     @elseif ($d->pjn_status === '2')
-                        Diajukan
+                        Menunggu Approval HRD
                     @elseif ($d->pjn_status === '3')
-                        Diterima
+                        Terverifikasi HRD
                     @elseif ($d->pjn_status === '4')
                         Ditolak
                     @endif
                     </td>
                     <td>
                         @if($d->pjn_status == '1')    
-                            <a class="btn btn-link" title="Kirim"><i class="fa fa-paper-plane"></i></a>
-                            <a href="{{ route('pengajuan.edit',$d->pjn_id) }}" class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
-                            <a class="btn btn-link" title="Hapus"><i class="fa fa-trash"></i></a>
+                        <form id="kirimForm" action="{{ route('pengajuan.update_status', $d->pjn_id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="button" class="btn btn-link" title="Kirim" data-toggle="modal" data-target="#confirmKirimModal">
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                        </form>
+                        <a href="{{ route('pengajuan.edit', $d->pjn_id) }}" class="btn btn-link" title="Edit"><i class="fa fa-pencil"></i></a>
+                        <form id="hapusForm" action="{{ route('pengajuan.destroy', $d->pjn_id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-link" title="Hapus" data-toggle="modal" data-target="#confirmHapusModal">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
                         @endif
-                        <a href="{{ route('pengajuan.show',$d->pjn_id) }}" class="btn btn-link" title="Detail"><i class="fa fa-bars"></i></a>
+                        <a href="{{ route('pengajuan.detail', ['pjn_id' => $d->pjn_id, 'alternative' => $alternative, 'name' => $name]) }}" class="btn btn-link" title="Detail"><i class="fa fa-bars"></i></a>
                     </td>
                 </tr>
                 @empty
@@ -80,44 +98,65 @@
                 @endforelse
             </tbody>
         </table>
-    </div>
 
-
-    <!-- Modal Konfirmasi -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Hapus</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalMessage">Apakah Anda yakin ingin menghapus data ini?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <form id="confirmForm" action="" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <button type="submit" class="btn btn-danger" id="confirmButton">Ya, Lanjutkan</button>
-                    </form>
+        <!-- konfirmasi kirim -->
+        <div class="modal fade" id="confirmKirimModal" tabindex="-1" role="dialog" aria-labelledby="confirmKirimModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmKirimModalLabel">Konfirmasi Kirim</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin mengirim pengajuan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary" id="confirmKirimBtn">Kirim</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- konfirmasi hapus -->
+        <div class="modal fade" id="confirmHapusModal" tabindex="-1" role="dialog" aria-labelledby="confirmHapusModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmHapusModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengajuan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmHapusBtn">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {{ $pagination->links('vendor.pagination.bootstrap-5') }}
         </div>
     </div>
 
     <!-- Bootstrap JS (optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Tangkap event saat tombol di klik
-        const modal = document.getElementById('confirmModal');
-        modal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; // Tombol yang di klik
-            const actionUrl = button.getAttribute('data-action'); // Ambil URL aksi
+        document.getElementById('confirmKirimBtn').addEventListener('click', function() {
+            // Submit the form after confirmation
+            document.getElementById('kirimForm').submit();
+        });
 
-            // Update form action dan message sesuai dengan status
-            const form = document.getElementById('confirmForm');
-            form.action = actionUrl;
+        document.getElementById('confirmHapusBtn').addEventListener('click', function() {
+            // Submit the form after confirmation
+            document.getElementById('hapusForm').submit();
         });
     </script>
 @endsection

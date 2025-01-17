@@ -68,6 +68,7 @@ class AuthController extends Controller
 
         $sso = Sso::where('kry_id', $karyawan->kry_id)
                 ->where('sso_status',1)
+                ->orderBy('sso_level','desc')
                 ->pluck('sso_level')->toArray(); // Mengambil level akses (sso_level) pengguna
         if(count($sso) == 0){ // Memeriksa apakah pengguna tidak memiliki level akses
             return back()->with('error','User ini belum mempunyai hak akses.'); // Mengembalikan pesan error jika tidak ada hak akses

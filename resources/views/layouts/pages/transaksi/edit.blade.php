@@ -59,11 +59,11 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="bukti-pdf">Bukti Penunjang PDF</label>
-                    <input type="file" class="form-control-file" id="bukti-pdf">
+                    <input type="file" class="form-control-file" name="bukti-pdf" id="bukti-pdf">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="bukti-excel">Bukti Penunjang Excel</label>
-                    <input type="file" class="form-control-file" id="bukti-excel">
+                    <input type="file" class="form-control-file" name="bukti-excel" id="bukti-excel">
                 </div>
             </div>
             <div class="d-flex justify-content-start mt-3">
