@@ -139,10 +139,10 @@
                     <a class="nav-link" href="{{ route('notifikasi.index') }}">Notifikasi <span class="notification">9</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Hai, {{ session('kry_name') }}</a>
+                    <a class="nav-link" href="{{ route('profile.index') }}">Hai, {{ session('kry_name') }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <a class="nav-link" data-toggle="modal" data-target="#logoutModal" style="cursor: pointer;">
                         <i class="fas fa-sign-out-alt"></i> Keluar
                     </a>
                 </li>
@@ -181,6 +181,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

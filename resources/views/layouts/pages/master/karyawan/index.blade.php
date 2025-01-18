@@ -13,7 +13,7 @@
 
         <!-- Create Button -->
         <a href="{{ route('karyawan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Karyawan
+            <i class="fas fa-plus"></i> Tambah Baru
         </a>
 
 

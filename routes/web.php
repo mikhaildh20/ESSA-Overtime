@@ -8,6 +8,7 @@ use App\Http\Controllers\SsoController;
 use App\Http\Controllers\PengajuanController;
 use App\Http\Controllers\JenisPengajuanController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\ProfileController;
 
 
 Route::get('/login',[AuthController::class, 'showLoginForm'])->name('login');
@@ -21,6 +22,7 @@ Route::middleware(['role:1,2,3'])->group(function() {
         return view('layouts.pages.dashboard'); 
     })->name('index');
     Route::resource('notifikasi',NotifikasiController::class);
+    Route::resource('profile',ProfileController::class);
 });
 
 // Otorisasi Karyawan (role:1)

@@ -13,7 +13,7 @@
 
         <!-- Create Button -->
         <a href="{{ route('jenis_pengajuan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Jenis Pengajuan
+            <i class="fas fa-plus"></i> Tambah Baru 
         </a>
 
         @if(session('success'))

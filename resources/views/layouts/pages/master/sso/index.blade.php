@@ -13,7 +13,7 @@
 
         <!-- Create Button -->
         <a href="{{ route('sso.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Data
+            <i class="fas fa-plus"></i> Tambah Baru
         </a>
 
         @if(session('success'))

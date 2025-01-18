@@ -35,7 +35,7 @@ class SendEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Informasi Akun Karywan [ESSA Politeknik Astra]',
+            subject: 'Informasi Akun Karyawan [ESSA Politeknik Astra]',
         );
     }
 

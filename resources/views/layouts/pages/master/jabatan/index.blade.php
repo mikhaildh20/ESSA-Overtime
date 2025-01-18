@@ -13,7 +13,7 @@
 
         <!-- Create Button -->
         <a href="{{ route('jabatan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Jabatan
+            <i class="fas fa-plus"></i> Tambah Baru
         </a>
 
         @if(session('success'))
@@ -28,7 +28,7 @@
                 <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Jabatan..." name="search" value="{{ request()->input('search') }}">
             </form>
         </div>
-
+        
         <!-- Table -->
         <table class="table table-bordered table-striped" id="jabatanTable">
             <thead>

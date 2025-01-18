@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('sso_level');
             $table->integer('sso_status');
             $table->string('sso_created_by');
-            $table->string('sso_modified_by');
+            $table->string('sso_modified_by')->nullable();
             $table->timestamps();
             
             // Add a unique constraint on the composite key

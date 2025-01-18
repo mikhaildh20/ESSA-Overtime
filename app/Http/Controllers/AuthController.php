@@ -66,6 +66,10 @@ class AuthController extends Controller
             return back()->with('error', 'Kredensial tidak valid.'); // Mengembalikan pesan error jika kredensial tidak valid
         }
 
+        if($karyawan->kry_status == 0){
+            return back()->with('error', 'Akun anda telah dinonaktfikan.');
+        }
+
         $sso = Sso::where('kry_id', $karyawan->kry_id)
                 ->where('sso_status',1)
                 ->orderBy('sso_level','desc')
