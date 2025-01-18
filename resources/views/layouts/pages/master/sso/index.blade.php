@@ -31,7 +31,33 @@
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('sso.index') }}" method="GET">
-                <input type="text" id="searchInput" class="form-control" placeholder="Cari Data..." name="search" value="{{ request()->input('search') }}">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" style="padding-left: 10px; padding-right: 10px;">
+                        <li>
+                            <label for="sort" style="margin-bottom: 5px; font-weight: bold;">Urutkan</label>
+                            <select name="sort" id="sort" class="form-select" style="width: 100%; padding-left: 10px; padding-right: 10px;">
+                                <option value="">-- Pilih Urutan --</option>
+                                <option value="asc" {{ $sort === 'asc' ? 'selected' : '' }}>A-Z [↑]</option>
+                                <option value="desc" {{ $sort === 'desc' ? 'selected' : '' }}>Z-A [↓]</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="sort-status" style="margin-bottom: 5px; font-weight: bold;">Status</label>
+                            <select id="sort-status" name="sort-status" class="form-select" style="width: 100%; padding-left: 10px; padding-right: 10px;">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="1" {{ $sortStatus === '1' ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ $sortStatus === '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                            </select>
+                        </li>
+                    </ul>
+                </div>
             </form>
         </div>
 
@@ -40,16 +66,7 @@
             <thead>
                 <tr>
                     <th>No.</th>
-                    <th>
-                        <a href="{{ route('sso.index', ['sort' => $sort == 'asc' ? 'desc' : 'asc', 'search' => $search]) }}" style="text-decoration: none; color: black;">
-                            Nama Karyawan
-                            @if($sort == 'asc')
-                                <i class="fas fa-sort-alpha-down"></i>
-                            @else
-                                <i class="fas fa-sort-alpha-up"></i>
-                            @endif
-                        </a>
-                    </th>
+                    <th>Nama Karyawan</th>
                     <th>Jabatan</th>
                     <th>Level Akses</th>
                     <th>Aksi</th>
@@ -74,10 +91,19 @@
                         </a>
 
                         <!-- Modal Trigger untuk Hapus atau Aktif -->
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
-                                    data-action="{{ route('sso.update_status', $d->sso_id) }}" >
+                        @if($d->sso_status == 1)
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                    data-action="{{ route('sso.update_status', $d->sso_id) }}" 
+                                    data-status="inactive" data-id="{{ $d->sso_id }}">
                                 <i class="fas fa-trash-alt"></i> Hapus
-                        </button>
+                            </button>
+                        @else
+                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                    data-action="{{ route('sso.update_status', $d->sso_id) }}" 
+                                    data-status="active" data-id="{{ $d->sso_id }}">
+                                <i class="fas fa-check-circle"></i> Aktif
+                            </button>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -118,18 +144,29 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Tangkap event saat tombol di klik
         const modal = document.getElementById('confirmModal');
         modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget; // Tombol yang di klik
             const actionUrl = button.getAttribute('data-action'); // Ambil URL aksi
+            const status = button.getAttribute('data-status'); // Ambil status
+            const id = button.getAttribute('data-id'); // Ambil ID
 
             // Update form action dan message sesuai dengan status
             const form = document.getElementById('confirmForm');
             form.action = actionUrl;
+
+            const message = document.getElementById('modalMessage');
+            if (status === 'active') {
+                message.textContent = 'Apakah Anda yakin ingin mengaktifkan data ini?';
+            } else {
+                message.textContent = 'Apakah Anda yakin ingin menghapus data ini?';
+            }
+
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.classList.toggle('btn-danger', status === 'inactive');
+            confirmButton.classList.toggle('btn-success', status === 'active');
         });
     </script>
 @endsection

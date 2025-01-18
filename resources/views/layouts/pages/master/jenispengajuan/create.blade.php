@@ -21,7 +21,7 @@
                         @enderror
                     </div>
 
-                    <div class="d-flex justify-content-start mt-3">
+                    <div class="d-flex justify-content-start mt-3 gap-2">
                         <a href="{{ route('jenis_pengajuan.index') }}" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Batal
                         </a>

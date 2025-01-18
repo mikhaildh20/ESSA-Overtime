@@ -49,7 +49,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <label for="keterangan">Keterangan <span class="required">*</span></label>
                         <!-- Display error message for keterangan -->
                         @error('keterangan')
@@ -58,17 +58,17 @@
                         <textarea name="keterangan" class="form-control" id="keterangan" rows="4" required>{{ $data->pjn_description }}</textarea>
                         <div id="charCount" class="form-text text-muted mt-1">0/100 karakter</div> <!-- Menampilkan jumlah karakter -->
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
                             <label for="bukti-pdf">Bukti Penunjang PDF</label>
                             <input type="file" class="form-control-file" name="bukti-pdf" id="bukti-pdf">
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="col-md-6">
                             <label for="bukti-excel">Bukti Penunjang Excel</label>
                             <input type="file" class="form-control-file" name="bukti-excel" id="bukti-excel">
                         </div>
                     </div>
-                    <div class="d-flex justify-content-start mt-3">
+                    <div class="d-flex justify-content-start mt-3 gap-2">
                         <a href="{{ route('pengajuan.index') }}" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Batal
                         </a>

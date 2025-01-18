@@ -3,115 +3,26 @@
 <head>
     <title>Employee Self Service Politeknik Astra</title>
     <link rel="icon" href="{{ asset('images/Logogram.png') }}" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Barlow', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .header {
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-            padding: 10px 20px;
-        }
-        .header img {
-            height: 50px;
-        }
-        .header h1 {
-            font-size: 20px;
-            margin: 0;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .header .title-top {
-            display: block;
-        }
-        .header .title-bottom {
-            display: block;
-        }
-        .nav-link {
-            color: #333 !important;
-        }
-        .notification {
-            background-color: #ddd;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 12px;
-        }
-        .content {
-            max-width: 1200px; 
-            margin: 0 auto;   
-            padding: 20px;
-        }
-        .status {
-            border: 1px solid #ddd;
-            padding: 20px;
-            background-color: #fff;
-        }
-        .bar-container {
-            width: 100%;
-            background-color: #f1f1f1;
-            border-radius: 25px;
-            margin: 10px 0;
-        }
-        .bar {
-            height: 20px;
-            border-radius: 25px;
-        }
-        .bar.medical {
-            width: 84%;
-            background-color: #f0ad4e;
-        }
-        .bar.annual {
-            width: 30%;
-            background-color: #f0ad4e;
-        }
-        .bar.large {
-            width: 0%;
-            background-color: #f0ad4e;
-        }
-        .bar-text {
-            position: relative;
-            top: -20px;
-            left: 10px;
-            font-size: 12px;
-            color: #fff;
-        }
-        .wide-content {
-            max-width: 90%;
-            margin: 0 auto;
-        }
-        @media (max-width: 768px) {
-            .header h1 {
-                display: block;
-                text-align: center;
-            }
-            .header .title-top {
-                display: block;
-            }
-            .header .title-bottom {
-                display: block;
-            }
-            .nav {
-                justify-content: center;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
-    <div class="header d-flex align-items-center flex-column flex-md-row">
-        <img src="{{ asset('images/Logogram.png') }}" alt="Company Logo">
-        <h1 class="ml-md-3 text-center text-md-left">
-            <span class="title-top">Employee Self Service</span>
-            <span class="title-bottom">Politeknik Astra</span>
-        </h1>
-        <nav class="ml-md-auto mt-3 mt-md-0">
-            <ul class="nav justify-content-center">
+    
+    <nav class="navbar navbar-expand-lg border-bttom">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <img src="{{ asset('images/Logogram.png') }}" alt="Astratech" class="me-3" style="width: 80px; height: auto;">
+                <div class="d-flex flex-column">
+                    <h5 class="mb-1">Employee Self Service</h5>
+                    <h5 class="mb-0">Politeknik Astra</h5>
+                </div>
+            </div>
+
+            <ul class="navbar nav me-auto mb-2 mb-lg-0 ms-5">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
@@ -138,8 +49,18 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('notifikasi.index') }}">Notifikasi <span class="notification">9</span></a>
                 </li>
+            </ul>
+
+        
+            <button class="navbar nav mb-2 mb-lg-0 btn p-4 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Hai, {{ session('kry_name') }}
+            </button>
+
+            <ul class="dropdown-menu  dropdown-menu-end">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('profile.index') }}">Hai, {{ session('kry_name') }}</a>
+                    <a class="nav-link" href="{{ route('profile.index') }}">
+                        <i class="fas fa-user"></i> Profil
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="modal" data-target="#logoutModal" style="cursor: pointer;">
@@ -147,8 +68,10 @@
                     </a>
                 </li>
             </ul>
-        </nav>
-    </div>
+        </div>
+    </nav>
+
+
     <div class="content wide-content container-fluid">
         <div class="row">
             <div class="col-12">
@@ -162,10 +85,8 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModalLabel">Konfirmasi Keluar</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Keluar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Apakah Anda yakin ingin keluar?
@@ -182,9 +103,9 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </body>
 </html>

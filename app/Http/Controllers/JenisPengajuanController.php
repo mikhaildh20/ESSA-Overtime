@@ -17,17 +17,24 @@ class JenisPengajuanController extends Controller
         $validated = $request->validate([
             'search' => 'nullable|string|max:255', // Input "search" opsional, harus berupa string, maksimal 255 karakter
             'sort' => 'nullable|in:asc,desc', // Input "sort" opsional, hanya boleh bernilai "asc" atau "desc"
+            'sort-status' => 'nullable|in:0,1' // 'sort-status' hanya boleh bernilai 0 atau 1
         ]);
 
         // Sanitasi input "search" untuk mencegah serangan XSS
         $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Jika "search" tidak ada, set null
         // Gunakan nilai default "asc" jika "sort" tidak diberikan
         $sort = $validated['sort'] ?? 'asc';
+        $sortStatus = $validated['sort-status'] ?? null; // Jika tidak ada 'sort-status', gunakan nilai default null
 
         // Ambil data dari tabel "JenisPengajuan" dengan filter dan sorting
-        $data = JenisPengajuan::where('jpj_status',1)->when($search, function ($query, $search) {
+        $data = JenisPengajuan::when($search, function ($query, $search) {
                 // Jika "search" ada, filter berdasarkan kolom "jpj_name" yang mengandung nilai "search"
                 return $query->where('jpj_name', 'like', '%' . $search . '%');
+            })
+            ->when($sortStatus !== null, function ($query) use ($sortStatus) { // Tambahkan filter status jika 'sortStatus' diisi
+                return $query->where('jpj_status', $sortStatus); // Filter berdasarkan status
+            }, function ($query) { // Jika 'sortStatus' tidak diisi, tampilkan hanya data yang aktif
+                return $query->where('jpj_status', '1'); // Default filter: hanya data aktif
             })
             // Urutkan hasil berdasarkan kolom "jpj_name" dengan arah sorting sesuai input "sort"
             ->orderBy(JenisPengajuan::sanitizeColumn('jpj_name'), $sort)
@@ -50,6 +57,7 @@ class JenisPengajuanController extends Controller
             'pagination' => $data, // Data hasil paginasi untuk navigasi halaman
             'search' => $search, // Nilai pencarian untuk ditampilkan kembali di form
             'sort' => $sort, // Status sorting untuk ditampilkan di UI
+            'sortStatus' => $sortStatus, // Nilai input 'sort-status' untuk dipertahankan di tampilan
         ]);
     }
 

@@ -1,0 +1,71 @@
+body {
+    font-family: 'Barlow', sans-serif;
+    background-color: #f8f9fa;
+}
+.notification {
+    background-color: #ddd;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+.content {
+    max-width: 1200px; 
+    margin: 0 auto;   
+    padding: 20px;
+}
+.status {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #fff;
+}
+.bar-container {
+    width: 100%;
+    background-color: #f1f1f1;
+    border-radius: 25px;
+    margin: 10px 0;
+}
+.bar {
+    height: 20px;
+    border-radius: 25px;
+}
+.bar.medical {
+    width: 84%;
+    background-color: #f0ad4e;
+}
+.bar.annual {
+    width: 30%;
+    background-color: #f0ad4e;
+}
+.bar.large {
+    width: 0%;
+    background-color: #f0ad4e;
+}
+.bar-text {
+    position: relative;
+    top: -20px;
+    left: 10px;
+    font-size: 12px;
+    color: #fff;
+}
+.wide-content {
+    max-width: 90%;
+    margin: 0 auto;
+}
+th, td{
+    text-align: center;
+}
+
+li a{
+    text-decoration: none;
+}
+nav, .nav-link, .navbar button{
+    color:#848B95;
+    
+}
+.nav-link:hover{
+    color: #333;
+}
+nav{
+    border-bottom: 2px solid #dee2e6; /* Change the color as needed */
+}
+

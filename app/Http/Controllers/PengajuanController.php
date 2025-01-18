@@ -32,18 +32,23 @@ class PengajuanController extends Controller
         $validated = $request->validate([
             'search' => 'nullable|string|max:255', // 'search' bisa kosong, harus string, maksimal 255 karakter
             'sort' => 'nullable|in:asc,desc', // 'sort' hanya boleh bernilai 'asc' atau 'desc'
+            'sort-status' => 'nullable|in:1,2,3,4'
         ]);
 
         // Ambil nilai 'search' dan 'sort' dengan sanitasi
         $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Sanitasi input 'search' untuk mencegah XSS
         $sort = $validated['sort'] ?? 'asc'; // Default nilai 'sort' adalah 'asc'
+        $sortStatus = $validated['sort-status'] ?? null; // Default nilai 'sort-status' adalah null
 
         // Ambil data pengajuan dengan relasi 'dpo_jenispengajuan', dan tambahkan kondisi pencarian serta sorting
         $data = Pengajuan::with('dpo_msjenispengajuan') // Eager loading untuk relasi 'dpo_jenispengajuan'
             ->when($search, function ($query, $search) { // Tambahkan kondisi pencarian jika input 'search' ada
-                return $query->whereHas('dpo_jenispengajuan', function ($q) use ($search) {
+                return $query->whereHas('dpo_msjenispengajuan', function ($q) use ($search) {
                     $q->where('jpj_name', 'like', '%' . $search . '%'); // Filter berdasarkan nama jenis pengajuan
                 });
+            })
+            ->when($sortStatus, function ($query, $sortStatus) { // Tambahkan kondisi filter berdasarkan status jika input 'status' ada
+                return $query->where('pjn_status', $sortStatus); // Filter berdasarkan status
             })
             ->where('pjn_status','!=','0')
             ->where('pjn_kry_id', session('topkey'))
@@ -70,6 +75,7 @@ class PengajuanController extends Controller
             'pagination' => $data, // Data pagination untuk kontrol navigasi halaman
             'search' => $search, // Nilai input pencarian untuk dipertahankan di tampilan
             'sort' => $sort, // Status sorting (asc/desc) untuk dipertahankan di tampilan
+            'sortStatus' => $sortStatus, // Nilai input 'sort-status' untuk dipertahankan di tampilan
             'name' => $session_name,
             'alternative' => $alternative
         ]);

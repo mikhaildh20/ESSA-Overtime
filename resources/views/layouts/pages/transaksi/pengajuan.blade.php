@@ -5,9 +5,6 @@
         .search-container {
             margin-bottom: 20px;
         }
-        th, td{
-            text-align: center;
-        }
     </style>
 
     <!-- Container -->
@@ -34,7 +31,35 @@
         <!-- Search and Filter -->
         <div class="search-container">
             <form action="{{ route('pengajuan.index') }}" method="GET">
-                <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" style="padding-left: 10px; padding-right: 10px;">
+                        <li>
+                            <label for="sort" style="margin-bottom: 5px; font-weight: bold;">Urutkan</label>
+                            <select name="sort" id="sort" class="form-select" style="width: 100%; padding-left: 10px; padding-right: 10px;">
+                                <option value="">-- Pilih Urutan --</option>
+                                <option value="asc" {{ $sort === 'asc' ? 'selected' : '' }}>A-Z [↑]</option>
+                                <option value="desc" {{ $sort === 'desc' ? 'selected' : '' }}>Z-A [↓]</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label for="sort-status" style="margin-bottom: 5px; font-weight: bold;">Status</label>
+                            <select id="sort-status" name="sort-status" class="form-select" style="width: 100%; padding-left: 10px; padding-right: 10px;">
+                                <option value="">-- Pilih Status --</option>
+                                <option value="1" {{ $sortStatus === '1' ? 'selected' : '' }}>Draft</option>
+                                <option value="2" {{ $sortStatus === '2' ? 'selected' : '' }}>Menunggu Approval HRD</option>
+                                <option value="3" {{ $sortStatus === '3' ? 'selected' : '' }}>Terverifikasi HRD</option>
+                                <option value="4" {{ $sortStatus === '4' ? 'selected' : '' }}>Ditolak</option>
+                            </select>
+                        </li>
+                    </ul>   
+                </div>
             </form>
         </div>
 
@@ -100,14 +125,12 @@
         </table>
 
         <!-- konfirmasi kirim -->
-        <div class="modal fade" id="confirmKirimModal" tabindex="-1" role="dialog" aria-labelledby="confirmKirimModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="confirmKirimModal" tabindex="-1" aria-labelledby="confirmKirimModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="confirmKirimModalLabel">Konfirmasi Kirim</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         Apakah Anda yakin ingin mengirim pengajuan ini?
@@ -121,14 +144,12 @@
         </div>
 
         <!-- konfirmasi hapus -->
-        <div class="modal fade" id="confirmHapusModal" tabindex="-1" role="dialog" aria-labelledby="confirmHapusModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="confirmHapusModal" tabindex="-1" aria-labelledby="confirmHapusModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="confirmHapusModalLabel">Konfirmasi Hapus</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         Apakah Anda yakin ingin menghapus pengajuan ini?
@@ -147,7 +168,6 @@
     </div>
 
     <!-- Bootstrap JS (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('confirmKirimBtn').addEventListener('click', function() {
             // Submit the form after confirmation

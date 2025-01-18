@@ -20,19 +20,25 @@ class SsoController extends Controller
         $validated = $request->validate([
             'search' => 'nullable|string|max:255', // 'search' boleh kosong, harus berupa string, maksimal 255 karakter
             'sort' => 'nullable|in:asc,desc', // 'sort' hanya boleh bernilai 'asc' atau 'desc'
+            'sort-status' => 'nullable|in:0,1' // 'sort-status' hanya boleh bernilai 0 atau 1
         ]);
 
         // Sanitasi nilai input 'search' untuk mencegah XSS
         $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Jika tidak ada 'search', set null
         $sort = $validated['sort'] ?? 'asc'; // Jika tidak ada 'sort', gunakan nilai default 'asc'
+        $sortStatus = $validated['sort-status'] ?? null; // Jika tidak ada 'sort-status', gunakan nilai default null
 
         // Ambil data SSO dengan relasi ke tabel karyawan dan jabatan menggunakan Eloquent
         $data = Sso::with(['dpo_mskaryawan.dpo_msjabatan']) // Ambil relasi 'dpo_mskaryawan' dan 'dpo_msjabatan'
-                ->where('sso_status', 1) // Filter berdasarkan sso_status
                 ->when($search, function ($query, $search) { // Jika ada input 'search'
                     return $query->whereHas('dpo_mskaryawan', function ($query) use ($search) { // Filter berdasarkan nama karyawan
                         $query->where('kry_name', 'like', '%' . $search . '%'); // Nama karyawan mengandung input 'search'
                     });
+                })
+                ->when($sortStatus !== null, function ($query) use ($sortStatus) { // Tambahkan filter status jika 'sortStatus' diisi
+                    return $query->where('sso_status', $sortStatus); // Filter berdasarkan status
+                }, function ($query) { // Jika 'sortStatus' tidak diisi, tampilkan hanya data yang aktif
+                    return $query->where('sso_status', '1'); // Default filter: hanya data aktif
                 })
                 ->whereHas('dpo_mskaryawan', function ($query) { // Tambahkan kondisi untuk kry_id_alternative
                     $query->where('kry_id_alternative', '!=', session('kry_id')); // Filter jika tidak sama dengan kry_id_alternative saat ini
@@ -47,7 +53,8 @@ class SsoController extends Controller
                 htmlspecialchars($sso->sso_id, ENT_QUOTES, 'UTF-8'), // Sanitasi ID SSO
                 htmlspecialchars($sso->dpo_mskaryawan->kry_name ?? '', ENT_QUOTES, 'UTF-8'), // Sanitasi nama karyawan
                 htmlspecialchars($sso->dpo_mskaryawan->dpo_msjabatan->jbt_name ?? '', ENT_QUOTES, 'UTF-8'), // Sanitasi nama jabatan
-                htmlspecialchars($sso->sso_level ?? '', ENT_QUOTES, 'UTF-8') // Sanitasi level SSO
+                htmlspecialchars($sso->sso_level ?? '', ENT_QUOTES, 'UTF-8'), // Sanitasi level SSO
+                htmlspecialchars($sso->sso_status ?? '', ENT_QUOTES, 'UTF-8') // Sanitasi status SSO
             );
         });
 
@@ -57,6 +64,7 @@ class SsoController extends Controller
             'pagination' => $data, // Data pagination untuk navigasi halaman
             'search' => $search, // Nilai input 'search' untuk dipertahankan di tampilan
             'sort' => $sort, // Nilai input 'sort' untuk dipertahankan di tampilan
+            'sortStatus' => $sortStatus, // Nilai input 'sort-status' untuk dipertahankan di tampilan
         ]);
     }
 

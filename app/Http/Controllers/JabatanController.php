@@ -17,18 +17,26 @@ class JabatanController extends Controller
         $validated = $request->validate([
             'search' => 'nullable|string|max:255', // 'search' bisa kosong, harus string, maksimal 255 karakter
             'sort' => 'nullable|in:asc,desc', // 'sort' hanya boleh bernilai 'asc' atau 'desc'
+            'sort-status' => 'nullable|in:0,1' // 'sort-status' hanya boleh bernilai 0 atau 1
         ]);
 
         // Sanitasi input untuk mencegah XSS
         $search = htmlspecialchars($validated['search'] ?? null, ENT_QUOTES, 'UTF-8'); // Jika tidak ada 'search', set null
         $sort = $validated['sort'] ?? 'asc'; // Jika tidak ada 'sort', gunakan nilai default 'asc'
+        $sortStatus = $validated['sort-status'] ?? null; // Jika tidak ada 'sort-status', gunakan nilai default null
 
         // Ambil data 'jabatan' dengan kondisi pencarian dan sorting
         $data = Jabatan::when($search, function ($query, $search) { // Jika ada input 'search'
-                return $query->where('jbt_name', 'like', '%' . $search . '%'); // Filter berdasarkan nama jabatan
-            })
-            ->orderBy(Jabatan::sanitizeColumn('jbt_name'), $sort) // Urutkan berdasarkan kolom yang disanitasi
-            ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
+            return $query->where('jbt_name', 'like', '%' . $search . '%'); // Filter berdasarkan nama jabatan
+        })
+        ->when($sortStatus !== null, function ($query) use ($sortStatus) { // Tambahkan filter status jika 'sortStatus' diisi
+            return $query->where('jbt_status', $sortStatus); // Filter berdasarkan status
+        }, function ($query) { // Jika 'sortStatus' tidak diisi, tampilkan hanya data yang aktif
+            return $query->where('jbt_status', '1'); // Default filter: hanya data aktif
+        })
+        ->orderBy(Jabatan::sanitizeColumn('jbt_name'), $sort) // Urutkan berdasarkan kolom yang disanitasi
+        ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
+
 
         // Konversi data hasil query menjadi DTO (Data Transfer Object)
         $dto = $data->map(function ($jabatan) {
@@ -45,6 +53,7 @@ class JabatanController extends Controller
             'pagination' => $data, // Data pagination untuk kontrol navigasi halaman
             'search' => $search, // Nilai input pencarian untuk dipertahankan di tampilan
             'sort' => $sort, // Status sorting (asc/desc) untuk dipertahankan di tampilan
+            'sortStatus' => $sortStatus, // Nilai input 'sort-status' untuk dipertahankan di tampilan
         ]);
     }
 

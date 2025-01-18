@@ -45,7 +45,7 @@
                         </select>
                     </div>
 
-                    <div class="d-flex justify-content-start mt-3">
+                    <div class="d-flex justify-content-start mt-3 gap-2">
                         <a href="{{ route('sso.index') }}" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Batal
                         </a>

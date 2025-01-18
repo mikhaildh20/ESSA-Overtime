@@ -40,7 +40,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="jenis-pengajuan">Jenis Pengajuan <span class="required">*</span></label>
-                        <select class="form-control" id="jenis-pengajuan" name="jenis-pengajuan" required>
+                        <select class="form-select" id="jenis-pengajuan" name="jenis-pengajuan" required>
                             <option value="">-- Pilih Jenis Pengajuan --</option>
                             @foreach($dto as $d)
                                 <option value="{{ $d->jpj_id }}" 
@@ -51,7 +51,7 @@
                         </select>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group mt-3">
                         <label for="keterangan">Keterangan <span class="required">*</span></label>
                         
                         <!-- Display error message for keterangan -->
@@ -63,18 +63,18 @@
                         <div id="charCount" class="form-text text-muted mt-1">0/100 karakter</div> <!-- Menampilkan jumlah karakter -->
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
+                    <div class="row mt-3">
+                        <div class="col-md-6">
                             <label for="bukti-pdf">Bukti Penunjang PDF <span class="required">*</span></label>
                             <input type="file" class="form-control-file" id="bukti-pdf" name="bukti-pdf" required>
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="col-md-6">
                             <label for="bukti-excel">Bukti Penunjang Excel</label>
                             <input type="file" class="form-control-file" id="bukti-excel" name="bukti-excel">
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-start mt-3">
+                    <div class="d-flex justify-content-start mt-3 gap-2">
                         <a href="{{ route('pengajuan.index') }}" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Batal
                         </a>
