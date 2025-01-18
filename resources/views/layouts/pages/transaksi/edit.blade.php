@@ -87,13 +87,26 @@
 
             // Get the initial length of the old value or empty string
             const initialCharCount = {{ old('keterangan') ? strlen(old('keterangan')) : 0 }};
-            
+
             // Display initial character count
             charCountDisplay.textContent = `${initialCharCount}/100 karakter`;
 
-            keteranganField.addEventListener('input', function() {
+            keteranganField.addEventListener('input', function (event) {
                 const charCount = keteranganField.value.length;
-                charCountDisplay.textContent = `${charCount}/100 karakter`;
+
+                // Prevent input if character limit is exceeded
+                if (charCount > 250) {
+                    // Check if the key pressed is not Backspace (key code 8)
+                    const isBackspace = event.inputType === 'deleteContentBackward';
+                    if (!isBackspace) {
+                        // Remove extra characters
+                        keteranganField.value = keteranganField.value.substring(0, 250);
+                    }
+                }
+
+                // Update character count display
+                const updatedCharCount = keteranganField.value.length; // Ensure accurate count
+                charCountDisplay.textContent = `${updatedCharCount}/100 karakter`;
             });
         </script>
 @endsection

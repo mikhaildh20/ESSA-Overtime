@@ -235,6 +235,7 @@ class SsoController extends Controller
 
         // Menyimpan perubahan status
         $sso->sso_status = $status;
+        $sso->sso_modified_by = session('kry_name');
         $sso->save();
 
         // Mengalihkan dan memberikan pesan status yang sesuai

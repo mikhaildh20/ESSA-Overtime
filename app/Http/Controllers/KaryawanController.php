@@ -302,6 +302,7 @@ class KaryawanController extends Controller
 
         // Menyimpan perubahan status
         $karyawan->kry_status = $status;
+        $karyawan->kry_modified_by = session('kry_name');
         $karyawan->save();
 
         // Mengalihkan dan memberikan pesan status yang sesuai

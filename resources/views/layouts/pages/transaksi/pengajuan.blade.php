@@ -11,10 +11,27 @@
     <div class="container-fluid my-5">
         <h1 class="mb-4">Pengajuan Lembur</h1>
 
-        <!-- Create Button -->
-        <a href="{{ route('pengajuan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Baru
-        </a>
+        <div class="d-flex justify-content-between mb-3">
+            <!-- Create Button -->
+            <a href="{{ route('pengajuan.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Tambah Baru
+            </a>
+
+            @if(session('role') == 2)
+            <div>
+                <!-- Export Excel Button -->
+                <a href="" class="btn btn-success me-2">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </a>
+
+                <!-- Export PDF Button -->
+                <a href="" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+            </div>
+            @endif
+        </div>
+
 
         @if(session('success'))
             <div class="alert alert-success" role="alert">
@@ -123,6 +140,10 @@
                 @endforelse
             </tbody>
         </table>
+
+        <div class="mt-4">
+            {{ $pagination->links('vendor.pagination.bootstrap-5') }}
+        </div>
 
         <!-- konfirmasi kirim -->
         <div class="modal fade" id="confirmKirimModal" tabindex="-1" aria-labelledby="confirmKirimModalLabel" aria-hidden="true">

@@ -106,7 +106,7 @@ class PengajuanController extends Controller
         // Validate the input fields
         $validated = $request->validate([
             'jenis-pengajuan' => 'required|exists:dpo_msjenispengajuan,jpj_id', // Pastikan nilai ada di tabel terkait
-            'keterangan' => 'required|string|min:100', // Minimal 500 karakter
+            'keterangan' => 'required|string|min:100|max:250', // Minimal 500 karakter
             'bukti-pdf' => 'required|file|mimes:pdf|max:2048', // PDF wajib dengan ukuran maksimal 2MB
             'bukti-excel' => 'nullable|file|mimes:xlsx,xls|max:2048', // Excel opsional
         ], [
@@ -226,7 +226,7 @@ class PengajuanController extends Controller
         // Validasi input dari form
         $validated = $request->validate([
             'jenis-pengajuan' => 'required|exists:dpo_msjenispengajuan,jpj_id', // Pastikan jenis pengajuan ada di tabel yang terkait
-            'keterangan' => 'required|string|min:100', // Keterangan harus minimal 100 karakter
+            'keterangan' => 'required|string|min:100|max:250', // Keterangan harus minimal 100 karakter
             'bukti-pdf' => 'nullable|file|mimes:pdf|max:2048', // File PDF opsional, dengan ukuran maksimum 2MB
             'bukti-excel' => 'nullable|file|mimes:xlsx,xls|max:2048', // File Excel opsional
         ], [
