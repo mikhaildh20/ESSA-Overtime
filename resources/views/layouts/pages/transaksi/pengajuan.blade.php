@@ -18,7 +18,7 @@
             </a>
         
             <!-- Export PDF Button -->
-            <a href="" class="btn btn-danger mb-3">
+            <a href="{{ route('pengajuan.pdf') }}" class="btn btn-danger mb-3">
                 <i class="fas fa-file-pdf"></i> Ekspor PDF
             </a>
         @endif

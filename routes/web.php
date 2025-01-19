@@ -34,6 +34,7 @@ Route::middleware(['role:1,2'])->group(function(){
 
 // Otorisasi HRD (role:2)
 Route::middleware(['role:2'])->group(function(){
+    Route::get('/pengajuan/pdf', [PengajuanController::class, 'ekspor_pdf'])->name('pengajuan.pdf');
 
 });
 

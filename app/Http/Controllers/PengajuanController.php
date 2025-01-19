@@ -11,6 +11,7 @@ use App\DataTransferObjects\JenisPengajuanDto;
 use App\DataTransferObjects\PengajuanDto;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PengajuanController extends Controller
 {
@@ -419,5 +420,20 @@ class PengajuanController extends Controller
 
         // Redirect ke halaman index pengajuan dengan pesan sukses
         return redirect()->route('pengajuan.index')->with('success', $message);
+    }
+
+    public function ekspor_pdf()
+    {
+        // Fetch the data, making sure to use the same variable name
+        $pengajuan = Pengajuan::where('pjn_status', '!=', '1')->get(); // Fetching all data where status is not '1'
+
+        // Load a view and pass the data to it
+        $pdf = PDF::loadView('exports.pdf', compact('pengajuan'));
+
+        // Generate the filename with formatted date
+        $filename = 'Rekapitulasi-Pengajuan-Lembur-' . now()->format('Y-m-d-H-i-s') . '-' . uniqid() . '.pdf';
+
+        // Download the PDF file
+        return $pdf->download($filename);
     }
 }
