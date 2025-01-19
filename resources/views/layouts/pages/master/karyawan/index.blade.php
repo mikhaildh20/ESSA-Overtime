@@ -11,11 +11,6 @@
     <div class="container-fluid my-5">
         <h1 class="mb-4">Data Karyawan</h1>
 
-        <!-- Create Button -->
-        <a href="{{ route('karyawan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Baru
-        </a>
-
 
         @if(session('success'))
             <div class="alert alert-success" role="alert">
@@ -33,6 +28,10 @@
         <div class="search-container">
             <form action="{{ route('karyawan.index') }}" method="GET">
                 <div class="input-group">
+                    <!-- Create Button -->
+                    <a href="{{ route('karyawan.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah
+                    </a>
                     <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
                     <button class="btn btn-outline-secondary" type="submit">
                         <i class="fas fa-search"></i> Cari
@@ -86,22 +85,22 @@
                         <form action="{{ route('karyawan.update_status', $d->kry_id_alternative) }}" method="POST">
                             @csrf
                             @method('PUT')
-                            <a href="{{ route('karyawan.edit', $d->kry_id_alternative) }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Ubah
+                            <a href="{{ route('karyawan.edit', $d->kry_id_alternative) }}" class="btn btn-link btn-sm">
+                                <i class="fas fa-edit"></i>
                             </a>
 
                             <!-- Modal Trigger untuk Hapus atau Aktif -->
                             @if($d->kry_status == 1)
-                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                         data-action="{{ route('karyawan.update_status', $d->kry_id_alternative) }}" 
                                         data-status="inactive" data-id="{{ $d->kry_id_alternative }}">
-                                    <i class="fas fa-trash-alt"></i> Hapus
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             @else
-                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                         data-action="{{ route('karyawan.update_status', $d->kry_id_alternative) }}" 
                                         data-status="active" data-id="{{ $d->kry_id_alternative }}">
-                                    <i class="fas fa-check-circle"></i> Aktif
+                                    <i class="fas fa-check-circle"></i>
                                 </button>
                             @endif
                         </form>

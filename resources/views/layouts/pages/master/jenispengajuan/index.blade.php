@@ -11,11 +11,6 @@
     <div class="container-fluid my-5">
         <h1 class="mb-4">Data Jenis Pengajuan</h1>
 
-        <!-- Create Button -->
-        <a href="{{ route('jenis_pengajuan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Baru 
-        </a>
-
         @if(session('success'))
             <div class="alert alert-success" role="alert">
                 {{ session('success') }}
@@ -26,6 +21,10 @@
         <div class="search-container">
             <form action="{{ route('jenis_pengajuan.index') }}" method="GET">
                 <div class="input-group">
+                    <!-- Create Button -->
+                    <a href="{{ route('jenis_pengajuan.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah
+                    </a>
                     <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
                     <button class="btn btn-outline-secondary" type="submit">
                         <i class="fas fa-search"></i> Cari
@@ -70,22 +69,22 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $d->jpj_name }}</td>
                     <td>
-                        <a href="{{ route('jenis_pengajuan.edit', $d->jpj_id) }}" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Ubah
+                        <a href="{{ route('jenis_pengajuan.edit', $d->jpj_id) }}" class="btn btn-link btn-sm">
+                            <i class="fas fa-edit"></i>
                         </a>
                         
                         <!-- Modal Trigger untuk Hapus atau Aktif -->
                         @if($d->jpj_status == 1)
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                            <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                     data-action="{{ route('jenis_pengajuan.update_status', $d->jpj_id) }}" 
                                     data-status="inactive" data-id="{{ $d->jpj_id }}">
-                                <i class="fas fa-trash-alt"></i> Hapus
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         @else
-                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                            <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                     data-action="{{ route('jenis_pengajuan.update_status', $d->jpj_id) }}" 
                                     data-status="active" data-id="{{ $d->jpj_id }}">
-                                <i class="fas fa-check-circle"></i> Aktif
+                                <i class="fas fa-check-circle"></i>
                             </button>
                         @endif
                     </td>

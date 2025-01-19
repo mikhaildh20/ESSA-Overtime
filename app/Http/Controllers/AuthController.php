@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use App\Models\Karyawan;
 use App\Models\Sso;
+use App\Models\Notifikasi;
 
 class AuthController extends Controller
 {
@@ -46,7 +47,7 @@ class AuthController extends Controller
     // Handle login
     public function login(Request $request)
     {
-        if(Auth::check()) // Jika pengguna sudah login
+        if(!session('topkey')) // Jika pengguna sudah login
         {
             $this->logout(); // Logout pengguna yang sedang aktif
         }
@@ -91,7 +92,7 @@ class AuthController extends Controller
     // Authenticate user based on selected role
     public function authenticate(Request $request)
     {
-        if(Auth::check()) // Jika pengguna sudah login
+        if(!session('topkey')) // Jika pengguna sudah login
         {
             $this->logout(); // Logout pengguna aktif
         }
@@ -100,8 +101,19 @@ class AuthController extends Controller
         if(in_array($role, session('roles',[]))) // Memeriksa apakah role termasuk dalam daftar roles yang disimpan di session
         {
             Auth::loginUsingId(session('kry_id')); // Login pengguna berdasarkan ID karyawan
-            session(['role' => $role]); // Menyimpan role aktif di session
+            $unread = Notifikasi::with('dpo_trpengajuanovertime')  // Eager load the relationship
+                ->whereHas('dpo_trpengajuanovertime', function ($query) {
+                $query->where('pjn_kry_id', session('topkey'));  // Apply condition to the related model
+            })
+            ->where('ntf_status','1')
+            ->count();
+
+            session([
+                'role' => $role,
+                'unread' => $unread
+            ]); // Menyimpan role aktif di session
             // Mencegah session hijacking
+
             session()->regenerate(); // Meregenerasi session untuk keamanan
             return redirect('/'); // Mengarahkan ke halaman utama
         }

@@ -43,6 +43,16 @@ class Karyawan extends Authenticatable
     }
 
     /**
+     * Relasi ke model Pengajuan
+     */
+    public function dpo_trpengajuanovertime()
+    {
+        return $this->hasMany(Pengajuan::class, 'kry_id', 'pjn_kry_id'); // Relasi dengan model Pengajuan
+    }
+
+
+
+    /**
      * Sanitasi nama kolom untuk query 'order by'
      * Menjamin hanya kolom yang aman yang digunakan untuk pengurutan.
      *

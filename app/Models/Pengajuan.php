@@ -32,6 +32,22 @@ class Pengajuan extends Model
         return $this->belongsTo(JenisPengajuan::class, 'pjn_type', 'jpj_id');
     }
 
+    /**
+     * Relasi ke model Karyawan
+     */
+    public function dpo_mskaryawan()
+    {
+        return $this->belongsTo(Karyawan::class, 'pjn_kry_id', 'kry_id');
+    }
+
+    /**
+     * Relasi ke model notifikasi
+     */
+    public function dpo_msnotifikasi()
+    {
+        return $this->hasOne(Notifikasi::class, 'pjn_id', 'ntf_pjn_id');
+    }
+
 
     /**
      * Sanitasi nama kolom untuk query 'order by'

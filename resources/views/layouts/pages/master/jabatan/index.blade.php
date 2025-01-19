@@ -11,11 +11,6 @@
     <div class="container-fluid my-5">
         <h1 class="mb-4">Data Jabatan</h1>
 
-        <!-- Create Button -->
-        <a href="{{ route('jabatan.create') }}" class="btn btn-primary mb-3">
-            <i class="fas fa-plus"></i> Tambah Baru
-        </a>
-
         @if(session('success'))
             <div class="alert alert-success" role="alert">
                 {{ session('success') }}
@@ -26,6 +21,10 @@
         <div class="search-container">
             <form action="{{ route('jabatan.index') }}" method="GET">
             <div class="input-group">
+                    <!-- Create Button -->
+                    <a href="{{ route('jabatan.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah
+                    </a>
                     <input type="text" id="searchInput" class="form-control" placeholder="Pencarian" name="search" value="{{ request()->input('search') }}">
                     <button class="btn btn-outline-secondary" type="submit">
                         <i class="fas fa-search"></i> Cari
@@ -73,22 +72,22 @@
                         <form action="{{ route('jabatan.update_status', $d->jbt_id) }}" method="POST">
                             @csrf
                             @method('PUT')
-                            <a href="{{ route('jabatan.edit', $d->jbt_id) }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Ubah
+                            <a href="{{ route('jabatan.edit', $d->jbt_id) }}" class="btn btn-link btn-sm">
+                                <i class="fas fa-edit"></i>
                             </a>
 
                             <!-- Modal Trigger untuk Hapus atau Aktif -->
                             @if($d->jbt_status == 1)
-                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                         data-action="{{ route('jabatan.update_status', $d->jbt_id) }}" 
                                         data-status="inactive" data-id="{{ $d->jbt_id }}">
-                                    <i class="fas fa-trash-alt"></i> Hapus
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             @else
-                                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
+                                <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" 
                                         data-action="{{ route('jabatan.update_status', $d->jbt_id) }}" 
                                         data-status="active" data-id="{{ $d->jbt_id }}">
-                                    <i class="fas fa-check-circle"></i> Aktif
+                                    <i class="fas fa-check-circle"></i>
                                 </button>
                             @endif
                         </form>

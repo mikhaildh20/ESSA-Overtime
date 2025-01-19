@@ -19,6 +19,11 @@ return new class extends Migration
             $table->string('ntf_modified_by')->nullable();
             $table->unsignedBigInteger('ntf_pjn_id');
             $table->timestamps();
+
+            $table->foreign('ntf_pjn_id')
+                ->references('pjn_id')
+                ->on('dpo_trpengajuanovertime')
+                ->onDelete('restrict');
         });
     }
 

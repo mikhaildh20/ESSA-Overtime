@@ -28,9 +28,12 @@ Route::middleware(['role:1,2,3'])->group(function() {
 // Otorisasi Karyawan dan Human Resource (role:1,2)
 Route::middleware(['role:1,2'])->group(function(){
     Route::resource('pengajuan', PengajuanController::class);
-    Route::get('/pengajuan/{pjn_id}/{alternative}/{name}',[PengajuanController::class, 'detail'])->name('pengajuan.detail');
     Route::get('/pengajuan/download/{filename}', [PengajuanController::class, 'download'])->name('pengajuan.download');
     Route::put('/pengajuan/update-status/{id}/{decision?}', [PengajuanController::class, 'update_status'])->name('pengajuan.update_status');
+});
+
+// Otorisasi HRD (role:2)
+Route::middleware(['role:2'])->group(function(){
 
 });
 

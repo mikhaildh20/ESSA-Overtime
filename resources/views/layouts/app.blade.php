@@ -26,12 +26,10 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
-                @if(session('role') == 1)
+                @if(session('role') == 1 || session('role') == 2)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('pengajuan.index') }}">Lembur</a>
                     </li>
-                @elseif(session('role') == 2)
-
                 @elseif(session('role') == 3)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('jabatan.index') }}">Jabatan</a>
@@ -47,7 +45,7 @@
                     </li>
                 @endif
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('notifikasi.index') }}">Notifikasi <span class="notification">9</span></a>
+                    <a class="nav-link" href="{{ route('notifikasi.index') }}">Notifikasi <span class="notification">{{ session('unread') ?? 0 }}</span></a>
                 </li>
             </ul>
 
@@ -86,7 +84,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Keluar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Apakah Anda yakin ingin keluar?

@@ -10,8 +10,8 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>ID Karyawan:</strong> {{ $session_alternative }}</p>
-                    <p><strong>Nama Lengkap:</strong> {{ $session_name }}</p>
+                    <p><strong>ID Karyawan:</strong> {{ $dto->kry_id_alternative }}</p>
+                    <p><strong>Nama Lengkap:</strong> {{ $dto->kry_name }}</p>
                     <p><strong>Jenis Pengajuan:</strong> {{ $dto->jpj_name  }}</p>
                     <p><strong>Status:</strong> 
                         @if($dto->pjn_status == '1')

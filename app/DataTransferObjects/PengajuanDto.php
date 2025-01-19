@@ -8,17 +8,21 @@ class PengajuanDto
     public $jpj_name;
     public $pjn_status;
     public $pjn_tanggal;
+    public $kry_id_alternative;
+    public $kry_name;
     public $pjn_id_alternative;
     public $pjn_keterangan;
     public $pjn_pdf;
     public $pjn_excel;
 
-    public function __construct($pjn_id, $jpj_name, $pjn_status, $pjn_tanggal, $pjn_id_alternative = null ,$pjn_keterangan = null, $pjn_pdf = null, $pjn_excel = null)
+    public function __construct($pjn_id, $jpj_name, $pjn_status, $pjn_tanggal, $kry_id_alternative, $kry_name, $pjn_id_alternative = null ,$pjn_keterangan = null, $pjn_pdf = null, $pjn_excel = null)
     {
         $this->pjn_id = $pjn_id;
         $this->jpj_name = $jpj_name;
         $this->pjn_status = $pjn_status;
         $this->pjn_tanggal = $pjn_tanggal;
+        $this->kry_id_alternative = $kry_id_alternative;
+        $this->kry_name = $kry_name;
         $this->pjn_id_alternative = $pjn_id_alternative;
         $this->pjn_keterangan = $pjn_keterangan;
         $this->pjn_pdf = $pjn_pdf;

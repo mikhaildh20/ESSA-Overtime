@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Pengajuan;
 use App\Models\JenisPengajuan;
 use App\Models\Karyawan;
+use App\Models\Notifikasi;
 use App\DataTransferObjects\JenisPengajuanDto;
 use App\DataTransferObjects\PengajuanDto;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,7 @@ class PengajuanController extends Controller
         $sort = $validated['sort'] ?? 'asc'; // Default nilai 'sort' adalah 'asc'
         $sortStatus = $validated['sort-status'] ?? null; // Default nilai 'sort-status' adalah null
 
+
         // Ambil data pengajuan dengan relasi 'dpo_jenispengajuan', dan tambahkan kondisi pencarian serta sorting
         $data = Pengajuan::with('dpo_msjenispengajuan') // Eager loading untuk relasi 'dpo_jenispengajuan'
             ->when($search, function ($query, $search) { // Tambahkan kondisi pencarian jika input 'search' ada
@@ -50,8 +52,12 @@ class PengajuanController extends Controller
             ->when($sortStatus, function ($query, $sortStatus) { // Tambahkan kondisi filter berdasarkan status jika input 'status' ada
                 return $query->where('pjn_status', $sortStatus); // Filter berdasarkan status
             })
-            ->where('pjn_status','!=','0')
-            ->where('pjn_kry_id', session('topkey'))
+            ->when(session('role') == 1, function($q){
+                $q->where('pjn_kry_id', session('topkey'));
+            })
+            ->when(session('role') == 2, function($q){
+                $q->where('pjn_status','!=','1');
+            })
             ->orderBy(Pengajuan::sanitizeColumn('pjn_status'), $sort) // Urutkan berdasarkan kolom yang disanitasi
             ->paginate(10); // Batasi hasil query dengan paginasi, 10 data per halaman
 
@@ -62,12 +68,11 @@ class PengajuanController extends Controller
                 htmlspecialchars($pengajuan->pjn_id ?? '', ENT_QUOTES, 'UTF-8'),
                 htmlspecialchars($pengajuan->dpo_msjenispengajuan->jpj_name ?? '', ENT_QUOTES, 'UTF-8'),
                 htmlspecialchars($pengajuan->pjn_status ?? '', ENT_QUOTES, 'UTF-8'),
-                htmlspecialchars(Carbon::parse($pengajuan->created_at)->format('l, d F Y') ?? '', ENT_QUOTES, 'UTF-8')
+                htmlspecialchars(Carbon::parse($pengajuan->created_at)->translatedFormat('l, d F Y') ?? '', ENT_QUOTES, 'UTF-8'),
+                htmlspecialchars($pengajuan->dpo_mskaryawan->kry_id_alternative ?? '', ENT_QUOTES, 'UTF-8'),
+                htmlspecialchars($pengajuan->dpo_mskaryawan->kry_name ?? '', ENT_QUOTES, 'UTF-8'),
             );
         });        
-
-        $alternative = session('kry_id');
-        $session_name = session('kry_name');
 
         // Kembalikan data ke view untuk ditampilkan
         return view('layouts.pages.transaksi.pengajuan', [
@@ -76,8 +81,6 @@ class PengajuanController extends Controller
             'search' => $search, // Nilai input pencarian untuk dipertahankan di tampilan
             'sort' => $sort, // Status sorting (asc/desc) untuk dipertahankan di tampilan
             'sortStatus' => $sortStatus, // Nilai input 'sort-status' untuk dipertahankan di tampilan
-            'name' => $session_name,
-            'alternative' => $alternative
         ]);
     }
 
@@ -164,28 +167,24 @@ class PengajuanController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    public function detail(string $id, string $session_alternative, string $session_name)
-    {
-        // Authorization check: Ensure the user has permission to access the pengajuan
-        if ($session_alternative != session('kry_id')) {
-            return redirect()->route('pengajuan.index')->with('error', 'Aksi dilarang!');
-        }
-
         // Retrieve the Pengajuan data with the related dpo_msjenispengajuan table
         $data = Pengajuan::with([
             'dpo_msjenispengajuan:jpj_id,jpj_name' // Include specific columns from the related table
         ])->findOrFail($id);
 
+        // Authorization check: Ensure the user has permission to access the pengajuan
+        if ($data->pjn_kry_id != session('topkey') && session('role') == 1) {
+            return redirect()->route('pengajuan.index')->with('error', 'Aksi dilarang!');
+        }
 
         // Prepare the data to be passed to the view (no need for map, as $data is a single instance)
         $dto = new PengajuanDto(
             htmlspecialchars($data->pjn_id ?? '' , ENT_QUOTES,'UTF-8'),
             htmlspecialchars($data->dpo_msjenispengajuan->jpj_name ?? '' , ENT_QUOTES,'UTF-8'),
             htmlspecialchars($data->pjn_status ?? '' , ENT_QUOTES, 'UTF-8'),
-            htmlspecialchars(Carbon::parse($data->created_at)->format('l, d F Y') ?? '', ENT_QUOTES,'UTF-8'),
+            htmlspecialchars(Carbon::parse($data->created_at)->translatedFormat('l, d F Y') ?? '', ENT_QUOTES,'UTF-8'),
+            htmlspecialchars($data->dpo_mskaryawan->kry_id_alternative ?? '', ENT_QUOTES, 'UTF-8'),
+            htmlspecialchars($data->dpo_mskaryawan->kry_name ?? '', ENT_QUOTES, 'UTF-8'),
             htmlspecialchars($data->pjn_id_alternative ?? '', ENT_QUOTES, 'UTF-8'),
             htmlspecialchars($data->pjn_description ?? '' , ENT_QUOTES, 'UTF-8'),
             htmlspecialchars( $data->pjn_pdf_proof ?? '', ENT_QUOTES, 'UTF-8'),
@@ -193,7 +192,7 @@ class PengajuanController extends Controller
         );
 
         // Pass the necessary data to the view
-        return view("layouts.pages.transaksi.detail", compact('dto', 'session_alternative', 'session_name'));
+        return view("layouts.pages.transaksi.detail", compact('dto'));
     }
 
     /**
@@ -312,7 +311,7 @@ class PengajuanController extends Controller
             $startPos = strpos($filename, 'KRY-');
             $extracted = substr($filename, $startPos, strpos($filename, '-', $startPos + 4) - $startPos);
             
-            if($extracted != session('kry_id')){
+            if($extracted != session('kry_id') && session('role') == 1){
                 return redirect()->route('pengajuan.index')->with('error', 'Aksi Dilarang!');
             }
 
@@ -338,16 +337,9 @@ class PengajuanController extends Controller
         
         // Ambil data pengajuan berdasarkan ID, jika tidak ditemukan akan memunculkan error 404
         $data = Pengajuan::findOrFail($id); 
-        if($data->pjn_kry_id != session('topkey')){
+        if($data->pjn_kry_id != session('topkey') && session('role') == 1){
             return redirect()->route('pengajuan.index')->with('error', 'Aksi dilarang!');
         }
-
-        // Pesan-pesan untuk berbagai status
-        $messages = [
-            "Draft berhasil dikirim!", // Pesan untuk draft dikirim
-            "Pengajuan diterima!",    // Pesan untuk pengajuan diterima
-            "Pengajuan ditolak!"      // Pesan untuk pengajuan ditolak
-        ];
 
         // Inisialisasi status awal (default 2)
         $init_status = 2; 
@@ -356,12 +348,24 @@ class PengajuanController extends Controller
         // Inisialisasi variabel untuk catatan review (diisi jika status != 1)
         $review = null; 
         // Inisialisasi indeks pesan default
-        $arrMsg = 0; 
-        // Inisialisasi array untuk field yang akan diupdate
-        $update_field = [
-            'pjn_status' => $init_status, // Status default
-            'pjn_modified_by' => session('kry_name') // Nama pengubah diambil dari sesi
+        // Pesan-pesan untuk berbagai status
+        $messages = [
+            "Draft berhasil dikirim!", // Pesan untuk draft dikirim
+            "Pengajuan diterima!",    // Pesan untuk pengajuan diterima
+            "Pengajuan ditolak!"      // Pesan untuk pengajuan ditolak
         ];
+        
+        // Map decision values directly to message indices
+        $decisionMap = [
+            3 => 1, // Decision 3 maps to index 1
+            4 => 2  // Decision 4 maps to index 2
+        ];
+        
+        // Default to index 0
+        $arrMsg = $decisionMap[$decision] ?? 0;
+        
+        // Get the message
+        $message = $messages[$arrMsg];        
 
         // Cek apakah status pengajuan saat ini adalah 1 (Draft)
         if ($data->pjn_status == 1) {
@@ -381,8 +385,13 @@ class PengajuanController extends Controller
         } else {
             // Validasi input dari pengguna (review harus diisi dan maksimal 100 karakter)
             $validatedData = $request->validate([
-                'review' => 'required|max:100'
+                'review' => 'nullable|max:100',
+                'decision' => 'required|in:3,4'
             ]);
+
+            if($decision == 4 && strlen($validatedData['review']) < 10){
+                return back()->with('error', 'Catatan minimal 10 karakter!');
+            }
 
             // Sanitasi input review untuk menghindari serangan XSS
             $review = htmlspecialchars($validatedData['review'] ?? '', ENT_QUOTES, 'UTF-8'); 
@@ -390,14 +399,25 @@ class PengajuanController extends Controller
             $update_field['pjn_review_notes'] = $review; 
             // Ubah status berdasarkan parameter keputusan
             $init_status = $decision; 
-            // Tentukan indeks pesan berdasarkan nilai keputusan
-            $arrMsg = ($decision === 3) ? 1 : 2; 
+
+            Notifikasi::create([
+                'ntf_message' => $review,
+                'ntf_status' => 1,
+                'ntf_created_by' => session('kry_name'),
+                'ntf_modified_by' => null,
+                'ntf_pjn_id' => $id
+            ]);
         }
 
+         // Inisialisasi array untuk field yang akan diupdate
+         $update_field['pjn_status'] = $init_status;
+         $update_field['pjn_modified_by'] = session('kry_name');
+
         // Update data pengajuan dengan field yang sudah disiapkan
-        $data->update($update_field);
+        $status = $data->update($update_field);
+
 
         // Redirect ke halaman index pengajuan dengan pesan sukses
-        return redirect()->route('pengajuan.index')->with('success', $messages[$arrMsg]);
+        return redirect()->route('pengajuan.index')->with('success', $message);
     }
 }

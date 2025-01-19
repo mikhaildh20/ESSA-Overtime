@@ -30,6 +30,11 @@ return new class extends Migration
                   ->references('jpj_id')
                   ->on('dpo_msjenispengajuan')
                   ->onDelete('restrict');
+
+            $table->foreign('pjn_kry_id')
+                  ->references('kry_id')
+                  ->on('dpo_mskaryawan')
+                  ->onDelete('restrict');
         });
     }
 
