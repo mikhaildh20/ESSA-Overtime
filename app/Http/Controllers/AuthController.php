@@ -47,7 +47,7 @@ class AuthController extends Controller
     // Handle login
     public function login(Request $request)
     {
-        if(!session('topkey')) // Jika pengguna sudah login
+        if(session('topkey')) // Jika pengguna sudah login
         {
             $this->logout(); // Logout pengguna yang sedang aktif
         }
@@ -92,11 +92,6 @@ class AuthController extends Controller
     // Authenticate user based on selected role
     public function authenticate(Request $request)
     {
-        if(!session('topkey')) // Jika pengguna sudah login
-        {
-            $this->logout(); // Logout pengguna aktif
-        }
-
         $role = $request->input('role'); // Mendapatkan role yang dipilih dari input
         if(in_array($role, session('roles',[]))) // Memeriksa apakah role termasuk dalam daftar roles yang disimpan di session
         {
