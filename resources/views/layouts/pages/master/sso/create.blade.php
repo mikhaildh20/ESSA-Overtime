@@ -23,7 +23,7 @@
                     <!-- Nama Karyawan -->
                     <div class="mb-3 position-relative">
                         <label for="nama" class="form-label">Nama Karyawan</label>
-                        <select name="kry_id" class="form-control" required>
+                        <select name="kry_id" class="form-select" required>
                             <option value="">-- Pilih Karyawan --</option>
                             @foreach($dto as $d)
                                 <option value="{{ $d->kry_id_alternative }}" {{ old('kry_id') == $d->kry_id_alternative ? 'selected' : '' }}>{{ $d->kry_name }}</option>
@@ -37,7 +37,7 @@
                     <!-- Level Single Sign-On -->
                     <div class="mb-3 position-relative">
                         <label for="Level" class="form-label">Level</label>
-                        <select name="level" class="form-control" required>
+                        <select name="level" class="form-select" required>
                             <option value="">-- Pilih Level --</option>
                             <option value="1" {{ old('level') == 1 ? 'selected' : '' }}>Karyawan</option>
                             <option value="2" {{ old('level') == 2 ? 'selected' : '' }}>Human Resources</option>

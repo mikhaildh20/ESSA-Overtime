@@ -31,7 +31,7 @@
                         <!-- Jabatan Karyawan -->
                         <div class="mb-3 position-relative">
                             <label for="jabatan" class="form-label">Jabatan</label>
-                            <select name="jbt_id" class="form-control" required>
+                            <select name="jbt_id" class="form-select" required>
                                 <option value="">-- Pilih Jabatan --</option>
                                 @foreach($dto as $d)
                                     <option value="{{ $d->jbt_id }}" {{ old('jbt_id') == $d->jbt_id ? 'selected' : '' }}>{{ $d->jbt_name }}</option>
